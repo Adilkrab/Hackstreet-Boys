@@ -20,6 +20,7 @@ else:
             CheckConstraint("system_quantity >= 0"),
             CheckConstraint("unit_price >= 0"),
             CheckConstraint("low_stock_threshold >= 0"),
+            CheckConstraint("system_quantity <= 2000000000"),
         )
 
         id: Mapped[int] = mapped_column(primary_key=True)

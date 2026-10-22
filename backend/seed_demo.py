@@ -5,11 +5,12 @@ from decimal import Decimal
 
 from sqlalchemy import select
 
-from backend.core import Base, Product
+from backend.core import Product
 from backend.database import engine, SessionLocal
 from backend.schemas import ReviewInput, StockCountInput
 from backend.services.automation import review_request, submit_stock_count
 from backend.models import StockAdjustmentRequest
+from backend.schema_setup import prepare_database
 
 with (Path(__file__).resolve().parents[1] / "sample_data" / "products.csv").open(
     encoding="utf-8", newline=""
@@ -22,7 +23,7 @@ with (Path(__file__).resolve().parents[1] / "sample_data" / "products.csv").open
 
 
 def seed_demo():
-    Base.metadata.create_all(engine)
+    prepare_database(engine)
     with SessionLocal.begin() as db:
         for sku, name, quantity, price, threshold in PRODUCTS:
             if not db.scalar(select(Product).where(Product.sku == sku)):
@@ -56,7 +57,7 @@ def seed_demo():
                     action=decision, manager_name="Demo store manager", notes=label,
                 ))
                 status = request.status.value
-        print(f"{label}: request #{request_id} → {status}")
+        print(f"{label}: request #{request_id} -> {status}")
     print("Five products ready. Open /docs; use GET /api/products to find product IDs.")
 
 
