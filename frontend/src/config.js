@@ -1,8 +1,8 @@
 // One place to change the product name, demo shop and demo users.
 
-export const APP_NAME = "StokSemak";
+export const APP_NAME = "Stock Manager";
 export const APP_TAGLINE = "Stock counts you can trust";
-export const SHOP_NAME = "Kedai Runcit Maju (demo shop)";
+export const SHOP_NAME = "Kedai Ah Lee (demo shop)";
 
 // These mirror the rule in backend/services/automation.py.
 // The backend makes the real decision; the frontend only uses these
