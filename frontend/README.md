@@ -1,4 +1,4 @@
-# Frontend (Member 2): StokSemak
+# Frontend (Member 2): Stock Manager
 
 React + Vite screens for the SME inventory count and approval workflow.
 The app talks only to the FastAPI backend in `../backend`.
