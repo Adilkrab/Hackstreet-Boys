@@ -1,6 +1,20 @@
 {
   "name": "inventory-sme-frontend",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "private": true,
-  "description": "Directory scaffold for Member 2's React app; frontend not implemented here."
+  "type": "module",
+  "description": "Member 2: React screens for the SME inventory count + approval workflow.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.5.0",
+    "vite": "^6.3.5"
+  }
 }
