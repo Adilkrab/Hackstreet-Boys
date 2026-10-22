@@ -210,7 +210,8 @@ migration. Keep a database backup when upgrading any populated deployment.
 - Physical counts are **absolute quantities**, not incremental adjustments.
 - Negative counts are retained and audited as high-risk input per the brief;
   they cannot be approved. Reject and submit a corrected count.
-- If current stock differs from the request's recorded quantity, approval returns
+- If current stock differs from the request's recorded quantity, or stock changed
+  after submission (even if it later returned to the same quantity), approval returns
   **409** rather than overwriting subsequent changes. Reject and recount.
 - Duplicate reviews (including reviews of auto-approved requests) return **400**.
 - Missing product/request returns **404**; invalid input returns **422**.

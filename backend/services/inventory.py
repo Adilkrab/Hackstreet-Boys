@@ -2,10 +2,10 @@
 from fastapi import HTTPException
 from sqlalchemy import select, update
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, aliased
 
 from ..core import Product
-from ..models import ActionType, MovementType, StockMovement
+from ..models import ActionType, AuditLog, MovementType, StockAdjustmentRequest, StockMovement
 from ..schemas import ProductCreate, ProductUpdate, StockMovementInput
 from .common import audit, transaction
 
@@ -20,6 +20,24 @@ def get_product(db: Session, product_id: int, *, lock=False):
     if product is None:
         raise HTTPException(404, "Product not found.")
     return product
+
+
+def stock_changed_since_count(request_id, product_id):
+    """SQL predicate: compare audit sequence, even if stock returned to its old value."""
+    submitted = aliased(AuditLog)
+    changed = aliased(AuditLog)
+    submission_id = select(submitted.id).where(
+        submitted.product_id == product_id,
+        submitted.action_type == ActionType.DISCREPANCY_DETECTED,
+        submitted.details["request_id"].as_integer() == request_id,
+    ).order_by(submitted.id).limit(1).correlate(StockAdjustmentRequest).scalar_subquery()
+    return select(changed.id).where(
+        changed.product_id == product_id,
+        changed.id > submission_id,
+        changed.action_type.in_([ActionType.STOCK_IN, ActionType.STOCK_OUT,
+                                 ActionType.AUTO_ADJUSTED, ActionType.APPROVAL_GRANTED]),
+        changed.details["before_quantity"].as_integer() != changed.details["after_quantity"].as_integer(),
+    ).correlate(StockAdjustmentRequest).exists()
 
 
 def apply_stock_change(db, product, new_quantity, movement_type, actor, reason, request_id=None):

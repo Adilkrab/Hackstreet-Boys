@@ -104,6 +104,63 @@ def test_stock_change_marks_pending_count_stale(setup):
     }).status_code == 409
 
 
+def test_stock_round_trip_still_invalidates_old_count(setup):
+    client, _, _ = setup
+    request = client.post("/api/workflow/stock-count", json={
+        "product_id": 1, "physical_counted_qty": 10, "submitted_by": "Clerk", "reason": "Count",
+    }).json()
+    assert move(client, "OUT", 5).status_code == 201
+    assert move(client, "IN", 5).status_code == 201
+    # Stock is back to 20, but this count predates both intervening movements.
+    assert client.get("/api/workflow/pending-approvals").json()[0]["is_stale"] is True
+    assert client.post(f"/api/workflow/approvals/{request['id']}/review", json={
+        "action": "APPROVE", "manager_name": "Manager",
+    }).status_code == 409
+    assert client.get("/api/products/1").json()["system_quantity"] == 20
+
+
+def test_movements_before_count_and_noop_counts_do_not_make_it_stale(setup):
+    client, _, _ = setup
+    move(client, "OUT", 5)
+    request = client.post("/api/workflow/stock-count", json={
+        "product_id": 1, "physical_counted_qty": 5, "submitted_by": "Clerk", "reason": "Count",
+    }).json()
+    client.post("/api/workflow/stock-count", json={
+        "product_id": 1, "physical_counted_qty": 15, "submitted_by": "Clerk", "reason": "Unchanged count",
+    })
+    assert client.get("/api/workflow/pending-approvals").json()[0]["is_stale"] is False
+    assert client.post(f"/api/workflow/approvals/{request['id']}/review", json={
+        "action": "APPROVE", "manager_name": "Manager",
+    }).status_code == 200
+
+
+def test_pending_counts_track_their_own_submission_boundary(setup):
+    client, _, _ = setup
+    for count in (10, 5):
+        client.post("/api/workflow/stock-count", json={
+            "product_id": 1, "physical_counted_qty": count, "submitted_by": "Clerk", "reason": "Count",
+        })
+        if count == 10:
+            move(client, "OUT", 5)
+    pending = client.get("/api/workflow/pending-approvals").json()
+    assert [item["is_stale"] for item in pending] == [True, False]
+
+
+def test_other_product_movements_do_not_invalidate_pending_count(setup):
+    client, _, _ = setup
+    request = client.post("/api/workflow/stock-count", json={
+        "product_id": 1, "physical_counted_qty": 10, "submitted_by": "Clerk", "reason": "Count",
+    }).json()
+    other = create(client).json()
+    client.post("/api/stock-movements", json={
+        "product_id": other["id"], "movement_type": "OUT", "quantity": 2, "actor": "Clerk", "reason": "Sale",
+    })
+    assert client.get("/api/workflow/pending-approvals").json()[0]["is_stale"] is False
+    assert client.post(f"/api/workflow/approvals/{request['id']}/review", json={
+        "action": "APPROVE", "manager_name": "Manager",
+    }).status_code == 200
+
+
 def test_workflow_records_movements_only_when_stock_changes(setup):
     client, _, _ = setup
     def count(quantity):

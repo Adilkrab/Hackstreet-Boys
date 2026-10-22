@@ -8,6 +8,7 @@ from ..core import Product
 from ..database import get_db
 from ..schemas import AdjustmentOut, AuditLogOut, PendingApprovalOut, ReviewInput, StockCountInput
 from ..services.automation import review_request, submit_stock_count
+from ..services.inventory import stock_changed_since_count
 from ..models import ActionType, AdjustmentStatus, AuditLog, StockAdjustmentRequest
 
 router = APIRouter(prefix="/api/workflow", tags=["Inventory workflow"])
@@ -23,7 +24,9 @@ def stock_count(data: StockCountInput, db: DB):
 @router.get("/pending-approvals", response_model=list[PendingApprovalOut])
 def pending_approvals(db: DB, offset: int = Query(0, ge=0), limit: int = Query(100, ge=1, le=500)):
     rows = db.execute(
-        select(StockAdjustmentRequest, Product)
+        select(StockAdjustmentRequest, Product, stock_changed_since_count(
+            StockAdjustmentRequest.id, StockAdjustmentRequest.product_id
+        ))
         .join(Product, Product.id == StockAdjustmentRequest.product_id)
         .where(StockAdjustmentRequest.status == AdjustmentStatus.PENDING_APPROVAL)
         .order_by(StockAdjustmentRequest.created_at, StockAdjustmentRequest.id).offset(offset).limit(limit)
@@ -33,8 +36,8 @@ def pending_approvals(db: DB, offset: int = Query(0, ge=0), limit: int = Query(1
             **AdjustmentOut.model_validate(request).model_dump(),
             product_name=product.name, sku=product.sku,
             current_system_quantity=product.system_quantity,
-            is_stale=product.system_quantity != request.recorded_system_qty,
-        ) for request, product in rows
+            is_stale=product.system_quantity != request.recorded_system_qty or changed_since_count,
+        ) for request, product, changed_since_count in rows
     ]
 
 

@@ -8,7 +8,7 @@ from ..core import Product
 from ..schemas import ReviewInput, StockCountInput
 from ..models import ActionType, AdjustmentStatus as Status, MovementType, StockAdjustmentRequest, utcnow
 from .common import audit, transaction
-from .inventory import apply_stock_change
+from .inventory import apply_stock_change, stock_changed_since_count
 
 
 def details_for(request, before, after, **extra):
@@ -77,7 +77,9 @@ def review_request(db: Session, request_id: int, data: ReviewInput):
         if approve:
             if request.physical_counted_qty < 0:
                 raise HTTPException(400, "Cannot approve negative stock. Reject this request and submit a corrected count.")
-            if before != request.recorded_system_qty:
+            if before != request.recorded_system_qty or db.scalar(select(
+                stock_changed_since_count(request.id, request.product_id)
+            )):
                 raise HTTPException(409, "Stock changed since this count. Reject this request and submit a fresh count.")
             apply_stock_change(db, product, request.physical_counted_qty, MovementType.ADJUSTMENT,
                                data.manager_name, request.reason, request.id)
