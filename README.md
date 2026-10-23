@@ -4,26 +4,30 @@
 
 # Inventory SME — Hackstreet Boys
 
-Member 3's Python FastAPI + SQLAlchemy + SQLite workflow backend, arranged for
-the team's shared repository. Orbyte sync is simulated. No credentials needed.
+Python FastAPI + SQLAlchemy + SQLite inventory backend with product management,
+stock movement history, CSV/XLSX imports and Member 3's approval workflow.
+Orbyte sync is simulated. No credentials needed for the local demo.
 
 ## Project structure and ownership
 
 ```text
 backend/
-  main.py                    # Standalone demo application
-  models.py                  # Workflow request and audit models; exports Product and Base
-  core.py                    # Standalone Product or Member 1 adapter
+  main.py                    # Shared API application
+  models.py                  # Stock movement, workflow request and audit models
+  core.py                    # Shared Product and Base; optional external adapter
   database.py                # SQLite engine and session dependency
+  schema_setup.py            # Table creation and original SQLite audit upgrade
   schemas.py                 # Request and response contract
   seed_demo.py               # Five products and three demo scenarios
   requirements.txt
   routes/
+    inventory.py             # Products, movements, low-stock alerts, uploads
     workflow.py              # Counts, reviews, pending queue, audit logs
     integration.py           # Simulated Orbyte sync
   services/
-    inventory.py             # Product-list helper; core CRUD belongs to Member 1
-    import_service.py        # Reserved for Member 1; no importer implemented
+    inventory.py             # Product operations and shared stock-changing function
+    import_service.py        # CSV/XLSX validation, preview and atomic import
+    common.py                # Shared transactions and audit helper
     automation.py            # Detection, transactional review, audit helpers
     integration_service.py   # Orbyte payload generation
 frontend/
@@ -73,6 +77,13 @@ This module does not include authentication or a production role system.
 | Method | Path | Purpose |
 |---|---|---|
 | GET | `/api/products` | Standalone demo product picker |
+| GET | `/api/products/{product_id}` | Retrieve one product |
+| POST | `/api/products` | Add a product and opening stock |
+| PATCH | `/api/products/{product_id}` | Edit product details, excluding stock quantity |
+| POST | `/api/stock-movements` | Record normal stock-in or stock-out |
+| GET | `/api/stock-movements` | Movement history, optionally filtered by product |
+| GET | `/api/alerts` | Current low-stock products |
+| POST | `/api/inventory/import` | Preview or commit a CSV/XLSX upload |
 | POST | `/api/workflow/stock-count` | Submit an absolute physical count |
 | GET | `/api/workflow/pending-approvals` | Pending queue with SKU, name, MYR impact and staleness |
 | POST | `/api/workflow/approvals/{request_id}/review` | Approve/reject once |
@@ -110,16 +121,86 @@ financial impact, submitter, reason and timestamps. Completed reviews also
 include reviewer, review notes and review time.
 
 Audit filters: `?product_id=1&action_type=APPROVAL_GRANTED`.
-Pending and audit lists support `offset=0&limit=100` (maximum 500), oldest first.
+Product, movement, alert, pending and audit lists support `offset=0&limit=100` (maximum 500).
+Movement, pending and audit lists are oldest first.
 Action types: `DISCREPANCY_DETECTED`, `AUTO_ADJUSTED`, `APPROVAL_GRANTED`,
-`APPROVAL_REJECTED`, `ORBYTE_SYNC`.
+`APPROVAL_REJECTED`, `ORBYTE_SYNC`, `PRODUCT_CREATED`, `PRODUCT_UPDATED`,
+`STOCK_IN`, `STOCK_OUT`, `INVENTORY_IMPORTED`.
 
 Sync accepts no body, `{}`, or `{"actor":"Demo integration","since":"2026-01-01T00:00:00Z"}`.
-It returns approved changes since the supplied time (default last 24 hours),
+It returns approved adjustments and normal stock-in/out changes since the supplied time (default last 24 hours),
 current low-stock alerts (`quantity <= threshold`), MYR currency, sync log ID
 and `status: "SIMULATED_SUCCESS"`. Pending/rejected changes are excluded.
 It performs **no external HTTP calls** and makes **no delivery guarantees**.
 Repeated syncs intentionally overlap; consumers can deduplicate by `audit_log_id`.
+For normal stock movements, `request_id` is null. Opening stock from product
+creation/import is a starting baseline and is not included in the sync change list.
+
+### Product and stock APIs
+
+Create a product using the existing shared field names:
+
+```json
+{"sku":"MY-TEA-500G","name":"Tea 500g","system_quantity":10,"unit_price":"12.50","low_stock_threshold":3}
+```
+
+Product creation and editing accept an optional `?actor=Clerk` query parameter
+(default `Inventory staff`). SKUs are case-sensitive and unique. Duplicate SKUs
+return 409. Prices must be nonnegative with at most two decimal places; quantities
+must be whole numbers between 0 and 2,000,000,000.
+
+Use PATCH to edit `sku`, `name`, `unit_price`, or `low_stock_threshold`.
+Quantity changes must go through stock movements or the existing count workflow.
+Product deletion is not exposed, preserving movement/audit references.
+
+Record a receipt or sale with POST `/api/stock-movements`:
+
+```json
+{"product_id":1,"movement_type":"OUT","quantity":3,"actor":"Clerk","reason":"Customer sale"}
+```
+
+`movement_type` is `IN` or `OUT`; `quantity` must be a positive integer.
+Insufficient stock returns 409 and saves no movement or audit event.
+GET `/api/stock-movements?product_id=1` returns signed `delta`, before/after
+quantities, actor, reason, timestamp and any linked adjustment request.
+History includes nonzero opening stock and approved count adjustments.
+Pending/rejected counts and unchanged quantities create no stock movements.
+Legacy adjustments that predate this implementation remain in the audit trail;
+they are not backfilled into the new stock movement table.
+
+### CSV / Excel imports
+
+Send multipart form data to `/api/inventory/import`: `file`, `actor`, `dry_run`.
+`dry_run=true` is the default: it validates without saving. The response includes
+`valid`, `total_rows`, parsed `preview`, and `errors` with spreadsheet row numbers.
+Submit the same file with `dry_run=false` to save. The server revalidates it;
+all rows succeed together or nothing is saved. An invalid commit returns 422
+with the validation report in `detail`.
+
+Required headers, in any order:
+
+```csv
+sku,name,system_quantity,unit_price,low_stock_threshold
+MY-TEA-500G,Tea 500g,10,12.50,3
+```
+
+Imports create new products only. Existing SKUs and duplicate SKUs within the
+file are rejected; imports never silently overwrite live quantities. Use the
+stock movement or count APIs for existing stock.
+
+Supported formats: UTF-8 CSV (optional BOM) and the first worksheet of `.xlsx`.
+Maximum upload: 5 MiB, 2,000 data rows; maximum expanded XLSX: 25 MiB.
+Formula cells and legacy `.xls` files are rejected. Use values and export as XLSX/CSV.
+The existing `sample_data/products.csv` is suitable for an empty database;
+after seeding, its SKUs already exist and importing it will be rejected.
+
+### Existing demo database
+
+Startup and the demo seed automatically add the new tables and upgrade the
+original SQLite audit-event constraint, retaining products and audit records.
+The upgrade is transactional and safe to rerun. It only recognizes the original
+audit schema; customized schemas and non-SQLite databases require an explicit
+migration. Keep a database backup when upgrading any populated deployment.
 
 ### Business and safety rules
 
@@ -129,7 +210,8 @@ Repeated syncs intentionally overlap; consumers can deduplicate by `audit_log_id
 - Physical counts are **absolute quantities**, not incremental adjustments.
 - Negative counts are retained and audited as high-risk input per the brief;
   they cannot be approved. Reject and submit a corrected count.
-- If current stock differs from the request's recorded quantity, approval returns
+- If current stock differs from the request's recorded quantity, or stock changed
+  after submission (even if it later returned to the same quantity), approval returns
   **409** rather than overwriting subsequent changes. Reject and recount.
 - Duplicate reviews (including reviews of auto-approved requests) return **400**.
 - Missing product/request returns **404**; invalid input returns **422**.
@@ -198,7 +280,7 @@ app.dependency_overrides[workflow_get_db] = core_get_db
 `core_get_db` must yield a **fresh synchronous SQLAlchemy Session**, without an
 already-active transaction. Services own commit/rollback; don't wrap writes in
 another unit of work. Use Member 1's normal migrations to create
-`stock_adjustment_requests` and `audit_logs`. For a fresh hackathon SQLite DB,
+`stock_adjustment_requests`, `audit_logs`, and `stock_movements`. For a fresh hackathon SQLite DB,
 import the workflow models and call `Base.metadata.create_all(engine)`.
 Existing databases need proper migrations; `create_all` doesn't alter tables.
 

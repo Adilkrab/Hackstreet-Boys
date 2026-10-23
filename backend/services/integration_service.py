@@ -5,7 +5,7 @@ from sqlalchemy import select
 from ..core import Product
 from ..schemas import SyncInput, SyncOut, SyncPayload
 from ..models import ActionType, AuditLog, utcnow
-from .automation import audit, transaction
+from .common import audit, transaction
 
 
 def simulate_orbyte_sync(db, data: SyncInput):
@@ -17,7 +17,8 @@ def simulate_orbyte_sync(db, data: SyncInput):
         changes = db.execute(
             select(AuditLog, Product).join(Product, Product.id == AuditLog.product_id)
             .where(AuditLog.timestamp >= since, AuditLog.timestamp <= now,
-                   AuditLog.action_type.in_([ActionType.AUTO_ADJUSTED, ActionType.APPROVAL_GRANTED]))
+                   AuditLog.action_type.in_([ActionType.AUTO_ADJUSTED, ActionType.APPROVAL_GRANTED,
+                                            ActionType.STOCK_IN, ActionType.STOCK_OUT]))
             .order_by(AuditLog.timestamp, AuditLog.id)
         ).all()
         low_stock = db.scalars(
@@ -27,7 +28,7 @@ def simulate_orbyte_sync(db, data: SyncInput):
             source="sme-inventory", destination="orbyte", currency="MYR", generated_at=now, since=since,
             inventory_changes=[
                 {
-                    "audit_log_id": log.id, "request_id": log.details["request_id"],
+                    "audit_log_id": log.id, "request_id": log.details.get("request_id"),
                     "timestamp": log.timestamp, "product_id": product.id,
                     "sku": product.sku, "product_name": product.name,
                     "before_quantity": log.details["before_quantity"],

@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
 
-from sqlalchemy import JSON, DateTime, Enum as SAEnum, ForeignKey, Numeric, String, Text
+from sqlalchemy import JSON, CheckConstraint, DateTime, Enum as SAEnum, ForeignKey, Numeric, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from .core import Base, Product
@@ -20,6 +20,11 @@ class AdjustmentStatus(str, Enum):
 
 
 class ActionType(str, Enum):
+    PRODUCT_CREATED = "PRODUCT_CREATED"
+    PRODUCT_UPDATED = "PRODUCT_UPDATED"
+    STOCK_IN = "STOCK_IN"
+    STOCK_OUT = "STOCK_OUT"
+    INVENTORY_IMPORTED = "INVENTORY_IMPORTED"
     DISCREPANCY_DETECTED = "DISCREPANCY_DETECTED"
     AUTO_ADJUSTED = "AUTO_ADJUSTED"
     APPROVAL_GRANTED = "APPROVAL_GRANTED"
@@ -59,3 +64,33 @@ class AuditLog(Base):
     )
     product_id: Mapped[int | None] = mapped_column(ForeignKey(Product.id), nullable=True, index=True)
     details: Mapped[dict] = mapped_column(JSON)
+
+
+class MovementType(str, Enum):
+    OPENING = "OPENING"
+    IN = "IN"
+    OUT = "OUT"
+    ADJUSTMENT = "ADJUSTMENT"
+
+
+class StockMovement(Base):
+    __tablename__ = "stock_movements"
+    __table_args__ = (
+        CheckConstraint("before_quantity >= 0 AND after_quantity >= 0"),
+        CheckConstraint("after_quantity - before_quantity = delta"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    product_id: Mapped[int] = mapped_column(ForeignKey(Product.id), index=True)
+    movement_type: Mapped[MovementType] = mapped_column(
+        SAEnum(MovementType, native_enum=False, create_constraint=True)
+    )
+    delta: Mapped[int]
+    before_quantity: Mapped[int]
+    after_quantity: Mapped[int]
+    actor: Mapped[str] = mapped_column(String(120))
+    reason: Mapped[str] = mapped_column(Text)
+    adjustment_request_id: Mapped[int | None] = mapped_column(
+        ForeignKey(StockAdjustmentRequest.id), nullable=True
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, index=True)

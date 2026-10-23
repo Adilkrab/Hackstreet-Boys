@@ -1,36 +1,14 @@
-from contextlib import contextmanager
 from decimal import Decimal
 
 from fastapi import HTTPException
-from sqlalchemy import select, text, update
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from ..core import Product
 from ..schemas import ReviewInput, StockCountInput
-from ..models import ActionType, AdjustmentStatus as Status, AuditLog, StockAdjustmentRequest, utcnow
-
-
-@contextmanager
-def transaction(db: Session):
-    """Own one fresh session transaction; serialize SQLite writes before reading."""
-    if db.in_transaction():
-        raise RuntimeError("Workflow writes require a fresh session (no active transaction).")
-    try:
-        if db.get_bind().dialect.name == "sqlite":
-            db.execute(text("BEGIN IMMEDIATE"))
-        else:
-            db.begin()
-        yield
-        db.commit()
-    except Exception:
-        db.rollback()
-        raise
-
-
-def audit(db, actor, action, product_id, details):
-    entry = AuditLog(actor=actor, action_type=action, product_id=product_id, details=details)
-    db.add(entry)
-    return entry
+from ..models import ActionType, AdjustmentStatus as Status, MovementType, StockAdjustmentRequest, utcnow
+from .common import audit, transaction
+from .inventory import apply_stock_change, stock_changed_since_count
 
 
 def details_for(request, before, after, **extra):
@@ -70,7 +48,8 @@ def submit_stock_count(db: Session, data: StockCountInput):
         db.add(request)
         db.flush()
         if auto:
-            product.system_quantity = data.physical_counted_qty
+            apply_stock_change(db, product, data.physical_counted_qty, MovementType.ADJUSTMENT,
+                               data.submitted_by, data.reason, request.id)
         audit(
             db, data.submitted_by,
             ActionType.AUTO_ADJUSTED if auto else ActionType.DISCREPANCY_DETECTED,
@@ -98,17 +77,12 @@ def review_request(db: Session, request_id: int, data: ReviewInput):
         if approve:
             if request.physical_counted_qty < 0:
                 raise HTTPException(400, "Cannot approve negative stock. Reject this request and submit a corrected count.")
-            if before != request.recorded_system_qty:
+            if before != request.recorded_system_qty or db.scalar(select(
+                stock_changed_since_count(request.id, request.product_id)
+            )):
                 raise HTTPException(409, "Stock changed since this count. Reject this request and submit a fresh count.")
-            # Compare-and-set also protects integrations on databases without SQLite's write lock.
-            changed = db.execute(
-                update(Product).where(
-                    Product.id == product.id,
-                    Product.system_quantity == request.recorded_system_qty,
-                ).values(system_quantity=request.physical_counted_qty)
-            )
-            if changed.rowcount != 1:
-                raise HTTPException(409, "Stock changed during review; submit a fresh count.")
+            apply_stock_change(db, product, request.physical_counted_qty, MovementType.ADJUSTMENT,
+                               data.manager_name, request.reason, request.id)
         request.status = Status.APPROVED if approve else Status.REJECTED
         request.reviewed_by = data.manager_name
         request.reviewed_at = utcnow()
