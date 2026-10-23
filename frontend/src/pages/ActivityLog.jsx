@@ -27,7 +27,13 @@ export default function ActivityLog() {
   const logs = useMemo(() => [...(data?.[1] || [])].reverse(), [data]);
 
   const exportCsv = () => {
-    const quote = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+    // Cells starting with = + - @ (or tab / carriage return) could run as formulas in Excel,
+    // so prefix them with an apostrophe to keep them as plain text.
+    const quote = (v) => {
+      let text = String(v ?? "");
+      if (/^[=+\-@\t\r]/.test(text)) text = `'${text}`;
+      return `"${text.replace(/"/g, '""')}"`;
+    };
     const rows = [
       ["Time (UTC)", "Who", "Action", "Product", "What happened"],
       ...logs.map((l) => [

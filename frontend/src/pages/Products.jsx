@@ -163,7 +163,10 @@ function MovementModal({ product, type, onClose }) {
       refresh();
       onClose();
     } catch (err) {
-      setError(err.status === 409 ? new Error(`Not enough stock: only ${product.system_quantity} left.`) : err);
+      // Only translate the backend message when it really is a stock-out below zero;
+      // otherwise (stock-in limit, stock changed meanwhile, etc.) show the backend's own explanation.
+      const belowZero = err.status === 409 && type === "OUT" && /Resulting stock/.test(err.message) && after < 0;
+      setError(belowZero ? new Error(`Not enough stock: only ${product.system_quantity} left.`) : err);
     } finally {
       setSaving(false);
     }
@@ -346,12 +349,16 @@ function ImportModal({ onClose }) {
   const [error, setError] = useState(null);
   const [busy, setBusy] = useState(false);
 
+  // The report remembers which file it previewed, so "Import" always sends
+  // exactly the file the user checked, even if they pick another one later.
   const check = async () => {
+    const checkedFile = file;
     setBusy(true);
     setError(null);
     setReport(null);
     try {
-      setReport(await api.importFile(file, role.name, true));
+      const data = await api.importFile(checkedFile, role.name, true);
+      setReport({ ...data, file: checkedFile });
     } catch (err) {
       setError(err);
     } finally {
@@ -360,15 +367,16 @@ function ImportModal({ onClose }) {
   };
 
   const commit = async () => {
+    const previewedFile = report.file;
     setBusy(true);
     setError(null);
     try {
-      const result = await api.importFile(file, role.name, false);
+      const result = await api.importFile(previewedFile, role.name, false);
       notify(`Imported ${result.created_count} products.`);
       refresh();
       onClose();
     } catch (err) {
-      if (err.data?.detail?.errors) setReport(err.data.detail);
+      if (err.data?.detail?.errors) setReport({ ...err.data.detail, file: previewedFile });
       setError(err);
     } finally {
       setBusy(false);
@@ -387,6 +395,7 @@ function ImportModal({ onClose }) {
           className="input"
           type="file"
           accept=".csv,.xlsx"
+          disabled={busy}
           onChange={(e) => {
             setFile(e.target.files[0] || null);
             setReport(null);
