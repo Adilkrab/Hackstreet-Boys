@@ -65,13 +65,14 @@ async function request(path, { method = "GET", body, query } = {}) {
   return data;
 }
 
-// Lists are paginated on the server; fetch every page.
+// Lists are paginated on the server; fetch every page until a short page arrives.
+// No artificial cap: lists are oldest-first, so a cap would drop the NEWEST entries.
 async function fetchAll(path, query = {}) {
   const all = [];
   for (let offset = 0; ; offset += PAGE) {
     const page = await request(path, { query: { ...query, offset, limit: PAGE } });
     all.push(...page);
-    if (page.length < PAGE || offset > 20 * PAGE) return all;
+    if (page.length < PAGE) return all;
   }
 }
 
