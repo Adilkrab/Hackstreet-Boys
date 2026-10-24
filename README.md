@@ -1,10 +1,3 @@
-> [!IMPORTANT]
-> ## Submission Documents & Templates
-> Official forms and instructions: [Google Drive folder](https://drive.google.com/drive/folders/1xw7c2aN8N-at8hPEULzkcU76e_FFb0Ef).
-> This README describes the [`submission/template-layout`](https://github.com/Adilkrab/Hackstreet-Boys/tree/submission/template-layout) branch. RunPod is not used; the supplied template labels it required, so organizer confirmation is still needed.
-
----
-
 # Stock Manager
 
 Inventory management for Malaysian micro and small businesses: connect spreadsheet
@@ -242,10 +235,7 @@ for endpoints, input examples, import columns and approval behavior.
 - Hosting: Replit Core hosts the combined application at the public Live Demo link.
 - Storage: the Phase 1 demo uses a local SQLite file and synthetic seed data.
 - Secrets: the prototype requires no API keys or passwords.
-- Proof of use: [submission/SDC2026_HackstreetBoys_Replit_POU.pdf](submission/SDC2026_HackstreetBoys_Replit_POU.pdf).
-
-The proof form still needs genuine screenshots or other required evidence from the
-team's own Replit account before final portal submission.
+- Proof of use: (https://docs.google.com/document/d/1liGrTIGWcY3vbxL3dkBYuNGnBdXJQfXFoZwIGoReNTA/edit?usp=sharing)
 
 ## How We Use RunPod (Template Requirement)
 
@@ -302,19 +292,19 @@ results.
 | Name | Role | GitHub |
 | --- | --- | --- |
 | Josiah Chong Ren Shun (team leader) | Backend, database and imports | [Decartes159](https://github.com/Decartes159) |
-| Carlson Soo | Frontend and user experience | GitHub username not supplied |
+| Carlson Soo | Frontend and user experience | [carlsonsoo](https://github.com/carlsonsoo) |
 | Adilkrab | Automation and approval workflow | [Adilkrab](https://github.com/Adilkrab) |
 
 ## Submission Checklist
 
 - [x] Confirm team name, domain, SDG track, leader, university and member details.
-- [ ] Add the final public YouTube demo-video URL.
+- [x] Add the final public YouTube demo-video URL.
 - [x] Add and verify the public Replit live-demo URL.
 - [x] Add the team’s Replit project URL.
 - [x] Add the repository and pitch deck links.
 - [x] Complete the preliminary document and technical/tools declaration.
-- [ ] Refresh the repository technical-declaration PDF from the latest document so it includes Replit Agent.
-- [ ] Complete Replit proof of use with evidence from the team's account.
+- [x] Refresh the repository technical-declaration PDF from the latest document so it includes Replit Agent.
+- [x] Complete Replit proof of use with evidence from the team's account.
 - [x] Record "RunPod not used — no GPU workload" in the technical declaration.
 - [ ] Obtain organizer confirmation on the template’s RunPod usage/proof requirement.
 - [x] Rename the completed preliminary and technical forms with the registered team name.
@@ -331,7 +321,7 @@ results.
 | --- | --- | --- |
 | Preliminary proposal | [PDF](submission/SDC2026_HackstreetBoys_Preliminary.pdf) | [Google Doc](https://docs.google.com/document/d/1ArzOEWg5tQZ7Pbs40BXVxdhljdwsezUWkfaPu2azwyU/edit) |
 | Technical & tools declaration | [PDF](submission/SDC2026_HackstreetBoys_TechDeclaration.pdf) | [Google Doc](https://docs.google.com/document/d/1pr-XX2HV8N-jN1RYLqkxZt_GRbRyATnVA6krVtTYaLQ/edit) |
-| Replit proof of use | [PDF — evidence still needed](submission/SDC2026_HackstreetBoys_Replit_POU.pdf) | Complete with genuine account evidence |
+| Replit proof of use | [https://docs.google.com/document/d/1liGrTIGWcY3vbxL3dkBYuNGnBdXJQfXFoZwIGoReNTA/edit?usp=sharing](submission/SDC2026_HackstreetBoys_Replit_POU.pdf) | Complete with genuine account evidence |
 | Pitch deck | [PowerPoint](submission/Stock_Manager_Pitch_Submission.pptx) | — |
 
 Before submission, export the latest working documents to the required PDF names.
