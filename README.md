@@ -27,8 +27,8 @@ the Replit proof-of-use form still requires evidence from the team's account.
 | Replit Project | [SME Inventory Workflow Backend](https://replit.com/@lauleong3/SME-Inventory-Workflow-Backend) |
 | Live Demo | [Stock Manager on Replit](https://hackstreetboys-stock.replit.app/stock_manager/) — deployment URL recorded in this branch |
 | RunPod Endpoint | Not applicable - RunPod is not used; no GPU workload. |
-| Slide Deck | [Stock Manager pitch deck](submission/Stock_Manager_Pitch_Submission.pptx) |
-| Demo Video | Public video URL has not been supplied |
+| Slide Deck | [Stock Manager pitch deck](https://github.com/Adilkrab/Hackstreet-Boys/blob/submission/template-layout/submission/SDC2026_HackstreetBoys_Stock_Manager_Pitch.pptx) |
+| Demo Video | [Link](https://youtu.be/it1FCoYTTMs?si=tLobxygI_EipJZAt) |
 
 ## Overview
 
@@ -310,19 +310,18 @@ results.
 - [x] Rename the completed preliminary and technical forms with the registered team name.
 - [ ] Re-run the documented startup, tests, build, and public-demo checks on the final submission revision.
 - [x] Include the final code in the submission branch; the repository is public.
-- [ ] Add the committee's designated GitHub accounts as collaborators.
 - [ ] Check that every submitted link works without a personal login.
 - [ ] Recheck the final tracked files for API keys, passwords and other credentials.
 - [ ] Submit through sdchack.my before the deadline and follow the repository freeze rules.
 
 ## Submission Documents & Templates
 
-| Document | Repository copy | Editable working document |
-| --- | --- | --- |
-| Preliminary proposal | [PDF](submission/SDC2026_HackstreetBoys_Preliminary.pdf) | [Google Doc](https://docs.google.com/document/d/1ArzOEWg5tQZ7Pbs40BXVxdhljdwsezUWkfaPu2azwyU/edit) |
-| Technical & tools declaration | [PDF](submission/SDC2026_HackstreetBoys_TechDeclaration.pdf) | [Google Doc](https://docs.google.com/document/d/1pr-XX2HV8N-jN1RYLqkxZt_GRbRyATnVA6krVtTYaLQ/edit) |
-| Replit proof of use | [https://docs.google.com/document/d/1liGrTIGWcY3vbxL3dkBYuNGnBdXJQfXFoZwIGoReNTA/edit?usp=sharing](submission/SDC2026_HackstreetBoys_Replit_POU.pdf) | Complete with genuine account evidence |
-| Pitch deck | [PowerPoint](submission/Stock_Manager_Pitch_Submission.pptx) | — |
+| Document | Repository copy | 
+| --- | --- | 
+| Preliminary proposal | [PDF](https://github.com/Adilkrab/Hackstreet-Boys/blob/submission/template-layout/submission/SDC2026_HackstreetBoys_Preliminary.pdf) | 
+| Technical & tools declaration | [PDF](https://github.com/Adilkrab/Hackstreet-Boys/blob/submission/template-layout/submission/SDC%20Hackathon_%20Technical%20Tools%20Declaration%20Template.pdf) | 
+| Replit proof of use | [Prood of Use](https://github.com/Adilkrab/Hackstreet-Boys/blob/submission/template-layout/submission/SDC2026_HackstreetBoys_Replit_POU.pdf) | 
+| Pitch deck | [PowerPoint](https://github.com/Adilkrab/Hackstreet-Boys/blob/submission/template-layout/submission/SDC2026_HackstreetBoys_Stock_Manager_Pitch.pptx) |
 
 Before submission, export the latest working documents to the required PDF names.
 The Google Docs were edited after the uploaded source PDFs: the technical document
