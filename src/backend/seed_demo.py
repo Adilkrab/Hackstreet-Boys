@@ -1,16 +1,16 @@
-"""Idempotent demo: from the repository root, python -m backend.seed_demo."""
+"""Idempotent demo: from the repository root, python -m src.backend.seed_demo."""
 import csv
 from pathlib import Path
 from decimal import Decimal
 
 from sqlalchemy import select
 
-from backend.core import Product
-from backend.database import engine, SessionLocal
-from backend.schemas import ReviewInput, StockCountInput
-from backend.services.automation import review_request, submit_stock_count
-from backend.models import StockAdjustmentRequest
-from backend.schema_setup import prepare_database
+from src.backend.core import Product
+from src.backend.database import engine, SessionLocal
+from src.backend.schemas import ReviewInput, StockCountInput
+from src.backend.services.automation import review_request, submit_stock_count
+from src.backend.models import StockAdjustmentRequest
+from src.backend.schema_setup import prepare_database
 
 with (Path(__file__).resolve().parents[1] / "sample_data" / "products.csv").open(
     encoding="utf-8", newline=""

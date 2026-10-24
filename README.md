@@ -1,304 +1,341 @@
-# Hackstreet-Boys
+# Stock Manager
 
----
+Inventory management for Malaysian micro and small businesses: connect spreadsheet
+inputs with stock movements, physical counts, owner approvals and an activity trail.
 
-# Inventory SME — Hackstreet Boys
+The repository contains the Phase 1 prototype, branch-specific run instructions,
+submission documents and pitch deck. The public Replit deployment is live, while
+the Replit proof-of-use form still requires evidence from the team's account.
 
-Python FastAPI + SQLAlchemy + SQLite inventory backend with product management,
-stock movement history, CSV/XLSX imports and Member 3's approval workflow.
-Orbyte sync is simulated. No credentials needed for the local demo.
+## Team Information
 
-## Project structure and ownership
+| Field | Details |
+| --- | --- |
+| **Team Name** | Hackstreet Boys |
+| **Team Domain** | Domain 2: Orbyte Smart SME Challenge |
+| **SDG Track (1-17)** | SDG 8: Decent Work and Economic Growth |
+| **Team Leader** | Josiah Chong Ren Shun |
+| **University** | Xiamen University Malaysia; Monash University Malaysia |
+| **Number of Members** | 3 |
+
+## Links
+
+| Resource | Link / status |
+| --- | --- |
+| GitHub Repository | [Adilkrab/Hackstreet-Boys](https://github.com/Adilkrab/Hackstreet-Boys) |
+| Submission Branch | [submission/template-layout](https://github.com/Adilkrab/Hackstreet-Boys/tree/submission/template-layout) |
+| Replit Project | [SME Inventory Workflow Backend](https://replit.com/@lauleong3/SME-Inventory-Workflow-Backend) |
+| Live Demo | [Stock Manager on Replit](https://hackstreetboys-stock.replit.app/stock_manager/) — deployment URL recorded in this branch |
+| RunPod Endpoint | Not applicable - RunPod is not used; no GPU workload. |
+| Slide Deck | [Stock Manager pitch deck](https://github.com/Adilkrab/Hackstreet-Boys/blob/submission/template-layout/submission/SDC2026_HackstreetBoys_Stock_Manager_Pitch.pptx) |
+| Demo Video | [Link](https://youtu.be/it1FCoYTTMs?si=tLobxygI_EipJZAt) |
+
+## Overview
+
+### Problem
+
+Malaysian micro and small businesses often track stock through spreadsheets,
+paper records and manual follow-up. Differences between recorded quantities and
+physical counts can be missed or corrected without a clear approval trail.
+
+The proposal cites public inventory-accuracy, retail-shrink and Malaysian MSME
+benchmarks and maps the project to UN SDG Targets 8.2 and 8.3.
+
+### Solution
+
+Stock Manager combines inventory records, validated spreadsheet imports and a
+physical-count workflow. Small discrepancies can be corrected automatically;
+larger discrepancies wait for an owner decision. Actions are recorded in an audit log.
+
+Current automation is rule-based, not model inference. Orbyte sync is simulated
+and sends no external requests. Owner/clerk switching is a demo simulation,
+not authenticated access control. This is the declared Phase 1 scope for the
+Domain 2 challenge.
+
+### Key Features
+
+- Product creation, stock-in/out, low-stock alerts and movement history.
+- CSV/XLSX imports with a preview, validation and all-or-nothing creation of new SKUs.
+- Physical stock counts with discrepancy and MYR-impact calculations.
+- Automatic correction only when the difference is at most 2 units, the value is
+  below RM50, and the count is nonnegative.
+- Owner approval/rejection, stale-count protection and a chronological activity log.
+- React dashboard, simulated roles, CSV activity export and simulated Orbyte payloads.
+
+### Tech Stack
+
+| Layer | Technology |
+| --- | --- |
+| Frontend | React + Vite |
+| Backend | Python + FastAPI |
+| Database | SQLAlchemy + SQLite |
+| Spreadsheet processing | Python CSV + openpyxl (XLSX) |
+| AI / Compute | CPU-only rule-based automation; no GPU integration implemented |
+| Hosting / Development | Replit Core for the combined public FastAPI and React deployment |
+| Development assistance | Replit Agent, Claude, and Codex / ChatGPT; team-reviewed assistance, not runtime AI |
+
+## Project Structure
 
 ```text
-backend/
-  main.py                    # Shared API application
-  models.py                  # Stock movement, workflow request and audit models
-  core.py                    # Shared Product and Base; optional external adapter
-  database.py                # SQLite engine and session dependency
-  schema_setup.py            # Table creation and original SQLite audit upgrade
-  schemas.py                 # Request and response contract
-  seed_demo.py               # Five products and three demo scenarios
-  requirements.txt
-  routes/
-    inventory.py             # Products, movements, low-stock alerts, uploads
-    workflow.py              # Counts, reviews, pending queue, audit logs
-    integration.py           # Simulated Orbyte sync
-  services/
-    inventory.py             # Product operations and shared stock-changing function
-    import_service.py        # CSV/XLSX validation, preview and atomic import
-    common.py                # Shared transactions and audit helper
-    automation.py            # Detection, transactional review, audit helpers
-    integration_service.py   # Orbyte payload generation
-frontend/
-  src/
-    components/
-    pages/
-    services/
-  package.json               # Scaffold only; Member 2 supplies React app
-sample_data/
-  products.csv
-tests/
-  test_workflow.py
-README.md
+.
+├── docs/
+│   ├── API.md                         # Detailed API and workflow reference
+│   └── architecture.md                # System flow and deployment architecture
+├── src/
+│   ├── __init__.py
+│   ├── main.py                        # Combined app entry point
+│   ├── utils.py                       # Shared application paths
+│   ├── backend/                       # FastAPI, database, routes and services
+│   ├── frontend/                      # React app and Vite configuration
+│   └── sample_data/products.csv        # Synthetic demo inventory
+├── submission/
+│   ├── README.md                      # Submission contents and remaining evidence
+│   ├── SDC2026_HackstreetBoys_Preliminary.pdf
+│   ├── SDC2026_HackstreetBoys_TechDeclaration.pdf
+│   ├── SDC2026_HackstreetBoys_Replit_POU.pdf
+│   └── Stock_Manager_Pitch_Submission.pptx
+├── tests/
+├── .env.example
+├── .gitignore
+├── .replit
+├── LICENSE
+├── pytest.ini
+├── requirements.txt
+└── README.md
 ```
 
-The GitHub repository name may stay Hackstreet-Boys: the folders above belong
-at the repository root (not inside a second nested inventory-sme directory).
-Keep existing teammate implementations when merging; frontend and import-service
-scaffolds are only for paths that do not already exist.
+All application source is under `src/`. Tests and submission/deployment resources
+stay in the root folders used by the official template. Retain the current
+backend/frontend modules; there is no need to copy the template's example app.
 
-## Quick start
+### Architecture
 
-Python 3.11+ recommended. Run all commands from the repository root:
-
-```bash
-python -m pip install -r backend/requirements.txt
-python -m backend.seed_demo
-python -m uvicorn backend.main:app --host 0.0.0.0 --port 8000
+```text
+Browser -> React interface -> FastAPI /api routes -> SQLAlchemy -> SQLite
+                                 |
+                                 +-> Approval rules, movement history and audit logs
+                                 +-> Simulated Orbyte payload (no external delivery)
 ```
 
-Open http://localhost:8000/docs. Run the integration suite with:
+For the combined app, FastAPI serves the built frontend and API on the same port.
+The same flow is shown as a Mermaid diagram in [docs/architecture.md](docs/architecture.md).
 
-```bash
+## How to Run
+
+Requirements: Git, Python 3.11+ and Node.js 20+. There are no mandatory API
+credentials for the current demo.
+
+### Option 1 - Run on Replit
+
+1. Open the [team’s Replit project](https://replit.com/@lauleong3/SME-Inventory-Workflow-Backend), or import
+   `https://github.com/Adilkrab/Hackstreet-Boys` into a new Replit project.
+   These instructions describe the submission branch; for a fresh import, select
+   `submission/template-layout` before running the commands below. The existing
+   hosted project has its own hosting adapters and run configuration.
+2. In the Replit Shell, install dependencies and optionally add the demo data:
+
+   ```sh
+   python -m pip install -r requirements.txt
+   npm --prefix src/frontend ci
+   python -m src.backend.seed_demo
+   ```
+
+3. Click **Run**. `.replit` builds the React app and starts `python src/main.py`.
+   Open the web preview on port 8000. For publishing, the configuration provides
+   separate build and run commands.
+4. If configuration is needed, set variables from `.env.example` in Replit Secrets.
+   `PORT` defaults to 8000. No real secret belongs in Git.
+5. Open the published application using the Live Demo link above.
+
+SQLite is local-file storage. Choose persistent storage/hosting for a deployment
+that must retain changes across restarts or republishes; do not assume an
+ephemeral or multi-instance deployment will preserve this database.
+
+### Option 2 - Run locally (combined frontend + backend)
+
+Clone the repository, then create and activate a virtual environment:
+
+```sh
+git clone --branch submission/template-layout --single-branch https://github.com/Adilkrab/Hackstreet-Boys.git
+cd Hackstreet-Boys
+python -m venv .venv
+```
+
+If you already have a checkout, ensure you are on `submission/template-layout`
+before using these paths. Preserve any uncommitted changes before switching branches.
+
+Windows PowerShell:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
+
+macOS / Linux:
+
+```sh
+source .venv/bin/activate
+```
+
+Then install, build and run:
+
+```sh
+python -m pip install -r requirements.txt
+npm --prefix src/frontend ci
+npm --prefix src/frontend run build
+python -m src.backend.seed_demo
+python src/main.py
+```
+
+Open http://localhost:8000 for the app and http://localhost:8000/docs for the API docs.
+Press Ctrl+C to stop. The seed command is optional and safe to rerun without
+resetting existing stock. The default database is
+`src/backend/data/inventory.sqlite3` and is excluded from Git.
+
+If PowerShell blocks activation, call `.\.venv\Scripts\python.exe` in place of
+`python` in the commands above; activation is not required.
+
+### Frontend development (two terminals)
+
+Backend, from the repository root:
+
+```sh
+python -m uvicorn src.backend.main:app --host 0.0.0.0 --port 8000
+```
+
+Frontend, in a second terminal:
+
+```sh
+npm --prefix src/frontend run dev
+```
+
+Open http://localhost:5173. Vite proxies `/api` to the backend. Set `BACKEND_URL`
+when using another backend address. `VITE_API_URL` is for a separately hosted API.
+`.env.example` is a configuration reference; this Python app does not automatically
+read `.env` files. Export settings in the shell or use Replit Secrets.
+
+### Run Tests
+
+```sh
 python -m pytest -q
+npm --prefix src/frontend run build
 ```
 
-Seed data is safe to rerun without resetting existing stock or repeating demo
-scenarios. SQLite lives in backend/data/inventory.sqlite3, which is not committed.
-Use WORKFLOW_DATABASE_URL to select another database explicitly. Store SQLite on
-a persistent disk when hosting beyond a local demo.
+The Python suite uses isolated temporary databases. See [docs/API.md](docs/API.md)
+for endpoints, input examples, import columns and approval behavior.
 
-The frontend folder is deliberately not a runnable app; Member 2 owns it.
-This module does not include authentication or a production role system.
+## How We Use Replit (Required)
 
-## Endpoints for Member 2
+- **AI-assisted development:** Replit Agent helped with the FastAPI/SQLAlchemy/SQLite
+  workflow, stock-count and approval logic, audit logging, simulated Orbyte sync,
+  testing/debugging, and deployment setup. The technical declaration records
+  moderate use; the exact Agent version was not recorded.
 
-| Method | Path | Purpose |
-|---|---|---|
-| GET | `/api/products` | Standalone demo product picker |
-| GET | `/api/products/{product_id}` | Retrieve one product |
-| POST | `/api/products` | Add a product and opening stock |
-| PATCH | `/api/products/{product_id}` | Edit product details, excluding stock quantity |
-| POST | `/api/stock-movements` | Record normal stock-in or stock-out |
-| GET | `/api/stock-movements` | Movement history, optionally filtered by product |
-| GET | `/api/alerts` | Current low-stock products |
-| POST | `/api/inventory/import` | Preview or commit a CSV/XLSX upload |
-| POST | `/api/workflow/stock-count` | Submit an absolute physical count |
-| GET | `/api/workflow/pending-approvals` | Pending queue with SKU, name, MYR impact and staleness |
-| POST | `/api/workflow/approvals/{request_id}/review` | Approve/reject once |
-| GET | `/api/workflow/audit-logs` | Chronological audit trail |
-| POST | `/api/integration/orbyte-sync` | Generate and audit a simulated Orbyte payload |
+- Development: the repository is configured so Replit installs Python and Node
+  dependencies, builds the React frontend, and starts the combined FastAPI app.
+- Hosting: Replit Core hosts the combined application at the public Live Demo link.
+- Storage: the Phase 1 demo uses a local SQLite file and synthetic seed data.
+- Secrets: the prototype requires no API keys or passwords.
+- Proof of use: (https://docs.google.com/document/d/1liGrTIGWcY3vbxL3dkBYuNGnBdXJQfXFoZwIGoReNTA/edit?usp=sharing)
 
-Swagger `/docs`, ReDoc `/redoc`, machine-readable contract `/openapi.json`.
-Use the live OpenAPI contract for frontend types. Decimal money values are JSON
-**strings** (e.g. `"49.80"`) to preserve exactness.
+## How We Use RunPod (Template Requirement)
 
-Stock count example (use a real ID from `/api/products`):
+**Not used in Phase 1.** The application runs on CPU and has no model training,
+fine-tuning or GPU inference. There is no RunPod endpoint, handler, API credential
+requirement, or RunPod proof-of-use file in this branch. The proposal and technical
+declaration disclose this scope.
 
-```json
-{
-  "product_id": 1,
-  "physical_counted_qty": 35,
-  "submitted_by": "Stock clerk",
-  "reason": "Damaged stock discovered during shelf count"
-}
-```
+The supplied submission template labels RunPod usage and proof of use as required.
+The team must confirm with the organizers whether a non-GPU Domain 2 submission
+is acceptable; this README does not claim an exemption or completed RunPod use.
 
-Review example:
+### Prototype limitations
 
-```json
-{
-  "action": "APPROVE",
-  "manager_name": "Store manager",
-  "notes": "Verified against damaged-goods record"
-}
-```
+- Owner/clerk switching and entered names are not authentication; server-side
+  authorization is still required before real use.
+- SQLite is a local demo database, not a durable multi-instance production setup.
+- Orbyte sync logs a JSON payload but does not deliver it to an external service.
+- Counts are absolute quantities. Negative counts cannot be approved, repeated
+  reviews are rejected, and approvals are blocked when stock changed after counting.
+- The seed script adds missing demo products/scenarios; it does **not** wipe or
+  reset existing stock. Use synthetic data only in the public demo.
 
-`action` must be uppercase `APPROVE` or `REJECT`. A pending response includes
-the stored before quantity, physical count, signed delta, unit-price snapshot,
-financial impact, submitter, reason and timestamps. Completed reviews also
-include reviewer, review notes and review time.
+## Challenges & Learnings
 
-Audit filters: `?product_id=1&action_type=APPROVAL_GRANTED`.
-Product, movement, alert, pending and audit lists support `offset=0&limit=100` (maximum 500).
-Movement, pending and audit lists are oldest first.
-Action types: `DISCREPANCY_DETECTED`, `AUTO_ADJUSTED`, `APPROVAL_GRANTED`,
-`APPROVAL_REJECTED`, `ORBYTE_SYNC`, `PRODUCT_CREATED`, `PRODUCT_UPDATED`,
-`STOCK_IN`, `STOCK_OUT`, `INVENTORY_IMPORTED`.
+- Keeping frontend and backend expectations aligned required a shared API contract;
+  the team used FastAPI's OpenAPI documentation and end-to-end walkthroughs.
+- Import preview, pagination, CSV export and readable error handling were corrected
+  after integration testing with the production frontend build.
+- The team learned that inventory corrections need stale-count protection,
+  transaction boundaries and clear audit records, even in a small prototype.
 
-Sync accepts no body, `{}`, or `{"actor":"Demo integration","since":"2026-01-01T00:00:00Z"}`.
-It returns approved adjustments and normal stock-in/out changes since the supplied time (default last 24 hours),
-current low-stock alerts (`quantity <= threshold`), MYR currency, sync log ID
-and `status: "SIMULATED_SUCCESS"`. Pending/rejected changes are excluded.
-It performs **no external HTTP calls** and makes **no delivery guarantees**.
-Repeated syncs intentionally overlap; consumers can deduplicate by `audit_log_id`.
-For normal stock movements, `request_id` is null. Opening stock from product
-creation/import is a starting baseline and is not included in the sync change list.
+## Future Improvements
 
-### Product and stock APIs
+- Add authenticated staff accounts and server-side role authorization.
+- Move production data to durable managed storage and define a retention policy.
+- Connect the simulated Orbyte payload to an approved external integration.
+- Pilot with 3 to 5 shop owners, measure the baseline, and validate the thresholds.
+- Add advisory loss-pattern detection and bilingual summaries after the rules-based
+  workflow has been validated.
 
-Create a product using the existing shared field names:
+### Phase 2 impact targets
 
-```json
-{"sku":"MY-TEA-500G","name":"Tea 500g","system_quantity":10,"unit_price":"12.50","low_stock_threshold":3}
-```
+The proposal maps the project to **SDG 8**, particularly Targets **8.2** and **8.3**.
+The pilot will measure inventory-record accuracy, audit coverage, and owner review
+workload. After measuring a baseline across 5–20 products, the team targets a 20%
+relative reduction in mismatches after two count cycles, 100% of adjustments with
+an audit entry and named approver or recorded rule, and a test of whether owner
+reviews can be reduced by at least 50%. These are proposed targets, not measured
+results.
 
-Product creation and editing accept an optional `?actor=Clerk` query parameter
-(default `Inventory staff`). SKUs are case-sensitive and unique. Duplicate SKUs
-return 409. Prices must be nonnegative with at most two decimal places; quantities
-must be whole numbers between 0 and 2,000,000,000.
+## Team
 
-Use PATCH to edit `sku`, `name`, `unit_price`, or `low_stock_threshold`.
-Quantity changes must go through stock movements or the existing count workflow.
-Product deletion is not exposed, preserving movement/audit references.
+| Name | Role | GitHub |
+| --- | --- | --- |
+| Josiah Chong Ren Shun (team leader) | Backend, database and imports | [Decartes159](https://github.com/Decartes159) |
+| Carlson Soo | Frontend and user experience | [carlsonsoo](https://github.com/carlsonsoo) |
+| Adilkrab | Automation and approval workflow | [Adilkrab](https://github.com/Adilkrab) |
 
-Record a receipt or sale with POST `/api/stock-movements`:
+## Submission Checklist
 
-```json
-{"product_id":1,"movement_type":"OUT","quantity":3,"actor":"Clerk","reason":"Customer sale"}
-```
+- [x] Confirm team name, domain, SDG track, leader, university and member details.
+- [x] Add the final public YouTube demo-video URL.
+- [x] Add and verify the public Replit live-demo URL.
+- [x] Add the team’s Replit project URL.
+- [x] Add the repository and pitch deck links.
+- [x] Complete the preliminary document and technical/tools declaration.
+- [x] Refresh the repository technical-declaration PDF from the latest document so it includes Replit Agent.
+- [x] Complete Replit proof of use with evidence from the team's account.
+- [x] Record "RunPod not used — no GPU workload" in the technical declaration.
+- [ ] Obtain organizer confirmation on the template’s RunPod usage/proof requirement.
+- [x] Rename the completed preliminary and technical forms with the registered team name.
+- [ ] Re-run the documented startup, tests, build, and public-demo checks on the final submission revision.
+- [x] Include the final code in the submission branch; the repository is public.
+- [ ] Check that every submitted link works without a personal login.
+- [ ] Recheck the final tracked files for API keys, passwords and other credentials.
+- [ ] Submit through sdchack.my before the deadline and follow the repository freeze rules.
 
-`movement_type` is `IN` or `OUT`; `quantity` must be a positive integer.
-Insufficient stock returns 409 and saves no movement or audit event.
-GET `/api/stock-movements?product_id=1` returns signed `delta`, before/after
-quantities, actor, reason, timestamp and any linked adjustment request.
-History includes nonzero opening stock and approved count adjustments.
-Pending/rejected counts and unchanged quantities create no stock movements.
-Legacy adjustments that predate this implementation remain in the audit trail;
-they are not backfilled into the new stock movement table.
+## Submission Documents & Templates
 
-### CSV / Excel imports
+| Document | Repository copy | 
+| --- | --- | 
+| Preliminary proposal | [PDF](https://github.com/Adilkrab/Hackstreet-Boys/blob/submission/template-layout/submission/SDC2026_HackstreetBoys_Preliminary.pdf) | 
+| Technical & tools declaration | [PDF](https://github.com/Adilkrab/Hackstreet-Boys/blob/submission/template-layout/submission/SDC%20Hackathon_%20Technical%20Tools%20Declaration%20Template.pdf) | 
+| Replit proof of use | [Prood of Use](https://github.com/Adilkrab/Hackstreet-Boys/blob/submission/template-layout/submission/SDC2026_HackstreetBoys_Replit_POU.pdf) | 
+| Pitch deck | [PowerPoint](https://github.com/Adilkrab/Hackstreet-Boys/blob/submission/template-layout/submission/SDC2026_HackstreetBoys_Stock_Manager_Pitch.pptx) |
 
-Send multipart form data to `/api/inventory/import`: `file`, `actor`, `dry_run`.
-`dry_run=true` is the default: it validates without saving. The response includes
-`valid`, `total_rows`, parsed `preview`, and `errors` with spreadsheet row numbers.
-Submit the same file with `dry_run=false` to save. The server revalidates it;
-all rows succeed together or nothing is saved. An invalid commit returns 422
-with the validation report in `detail`.
+Before submission, export the latest working documents to the required PDF names.
+The Google Docs were edited after the uploaded source PDFs: the technical document
+now includes Replit Agent. Also align the demo URL across the documents: this branch
+uses `https://hackstreetboys-stock.replit.app/stock_manager/`, while the technical
+Google Doc still contains the earlier `sme-inventory-workflow-backend` demo address.
+Check viewer permissions on every link supplied to judges.
 
-Required headers, in any order:
+The completed preliminary and technical declarations use the official forms from
+the [official resources and tutorials](https://drive.google.com/drive/folders/1xw7c2aN8N-at8hPEULzkcU76e_FFb0Ef).
+The folder layout and README headings follow the
+[official submission template](https://github.com/michaelzhngg/SDC_Hackathon_Submission_Template).
 
-```csv
-sku,name,system_quantity,unit_price,low_stock_threshold
-MY-TEA-500G,Tea 500g,10,12.50,3
-```
+## License
 
-Imports create new products only. Existing SKUs and duplicate SKUs within the
-file are rejected; imports never silently overwrite live quantities. Use the
-stock movement or count APIs for existing stock.
-
-Supported formats: UTF-8 CSV (optional BOM) and the first worksheet of `.xlsx`.
-Maximum upload: 5 MiB, 2,000 data rows; maximum expanded XLSX: 25 MiB.
-Formula cells and legacy `.xls` files are rejected. Use values and export as XLSX/CSV.
-The existing `sample_data/products.csv` is suitable for an empty database;
-after seeding, its SKUs already exist and importing it will be rejected.
-
-### Existing demo database
-
-Startup and the demo seed automatically add the new tables and upgrade the
-original SQLite audit-event constraint, retaining products and audit records.
-The upgrade is transactional and safe to rerun. It only recognizes the original
-audit schema; customized schemas and non-SQLite databases require an explicit
-migration. Keep a database backup when upgrading any populated deployment.
-
-### Business and safety rules
-
-- Auto-approve only if `abs(delta) <= 2` **and** `abs(delta) * unit_price < 50.00`
-  **and** the physical count is nonnegative.
-- Exactly RM50, more than two units, or negative counts remain pending.
-- Physical counts are **absolute quantities**, not incremental adjustments.
-- Negative counts are retained and audited as high-risk input per the brief;
-  they cannot be approved. Reject and submit a corrected count.
-- If current stock differs from the request's recorded quantity, or stock changed
-  after submission (even if it later returned to the same quantity), approval returns
-  **409** rather than overwriting subsequent changes. Reject and recount.
-- Duplicate reviews (including reviews of auto-approved requests) return **400**.
-- Missing product/request returns **404**; invalid input returns **422**.
-- Each write owns a fresh session transaction. SQLite `BEGIN IMMEDIATE` serializes
-  writes before reads; other SQL databases use row locks and a quantity
-  compare-and-set. Audit and stock writes commit/roll back together.
-- Financial impact and price are snapshotted at submission, never recomputed
-  using a later product price.
-- A matching physical count has zero impact and is logged as `AUTO_ADJUSTED`.
-
-**Demo security boundary:** names supplied in JSON are attribution labels, not
-verified identities. No authentication or manager authorization is included.
-Before production, attach your team's authenticated-user and manager-role
-dependencies, derive actors from the session, and protect the sync endpoint.
-Audit logs have no edit/delete API, but are not tamper-proof against database
-administrators. This is not a production security/compliance system.
-
-### React connection
-
-```js
-const response = await fetch("/api/workflow/stock-count", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    product_id: 1, physical_counted_qty: 35,
-    submitted_by: "Stock clerk", reason: "Physical count"
-  })
-});
-const data = await response.json();
-if (!response.ok) throw new Error(data.detail ?? "Request failed");
-```
-
-On a separate frontend origin, use that backend's base URL and set
-`WORKFLOW_CORS_ORIGINS` to a comma-separated list of exact frontend origins.
-Defaults: `http://localhost:5173,http://localhost:3000`. CORS is not authorization.
-
-## Plug into Member 1's existing core
-
-Do **not** create a second Product table. Before importing this package, set:
-
-```bash
-export WORKFLOW_CORE_MODULE=your_app.models
-export WORKFLOW_DATABASE_URL=sqlite:////absolute/path/to/member1.sqlite3
-```
-
-That Python module must export `Base` (the shared SQLAlchemy declarative base)
-and `Product` with `id`, `sku`, `name`, `system_quantity`, `unit_price`,
-`low_stock_threshold`. Prices must be nonnegative, ideally `Numeric(..., 2)`.
-The FK uses the actual imported `Product.id`, not a hardcoded table name.
-This is an adapter hook; adapt it if Member 1 uses different field names.
-Importing the workflow models registers their two tables on the shared metadata.
-
-In Member 1's FastAPI entry point:
-
-```python
-from backend.database import get_db as workflow_get_db
-from backend.routes.workflow import router as workflow_router
-from backend.routes.integration import router as integration_router
-from your_app.database import get_db as core_get_db
-
-app.include_router(workflow_router)
-app.include_router(integration_router)
-app.dependency_overrides[workflow_get_db] = core_get_db
-```
-
-`core_get_db` must yield a **fresh synchronous SQLAlchemy Session**, without an
-already-active transaction. Services own commit/rollback; don't wrap writes in
-another unit of work. Use Member 1's normal migrations to create
-`stock_adjustment_requests`, `audit_logs`, and `stock_movements`. For a fresh hackathon SQLite DB,
-import the workflow models and call `Base.metadata.create_all(engine)`.
-Existing databases need proper migrations; `create_all` doesn't alter tables.
-
-Copy `backend/` plus the dependency list into Member 1's project.
-`main.py` and the standalone Product are demo-only and need not be integrated.
-
-## Demo scenarios
-
-Five Malaysian minimarket products: Milo 1kg, Maggi Kari 5-pack,
-Buruh Cooking Oil 5kg, Jasmine Rice 10kg, Ayam Brand Sardines 425g.
-
-1. Maggi: 80 → 79, −1 unit, RM5.80, auto-approved.
-2. Milo: 40 → 35, −5 units, RM124.50, pending then manager-approved.
-3. Oil: count 21 against 25, −4 units, RM123.60, manager-rejected; stock stays 25.
-
-Sardines start below threshold to demonstrate the Orbyte low-stock payload.
-To create a pending item in Swagger, count Milo as 30 after seeding.
-
-Tests use isolated temporary SQLite files and cover the five required cases,
-both risk boundaries, signed discrepancies, negatives, stale approvals, filters,
-sync payloads, validation, concurrent duplicate reviews and transaction rollback.
+This project is licensed under [Apache License 2.0](LICENSE). Preserve applicable
+third-party copyright notices and declarations in the final submission.

@@ -8,12 +8,12 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, event, select
 from sqlalchemy.orm import sessionmaker
 
-from backend.core import Base, Product
-from backend.database import get_db
-from backend.schemas import ReviewInput
-from backend.services.automation import review_request
-from backend.models import AuditLog, StockAdjustmentRequest
-from backend.main import app
+from src.backend.core import Base, Product
+from src.backend.database import get_db
+from src.backend.schemas import ReviewInput
+from src.backend.services.automation import review_request
+from src.backend.models import AuditLog, StockAdjustmentRequest
+from src.backend.main import app
 
 
 @pytest.fixture

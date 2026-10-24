@@ -4,13 +4,15 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import RedirectResponse
+from fastapi.responses import FileResponse, RedirectResponse
+from fastapi.staticfiles import StaticFiles
 
-from backend.database import engine
-from backend.schema_setup import prepare_database
-from backend.routes.inventory import router as inventory_router
-from backend.routes.integration import router as integration_router
-from backend.routes.workflow import router as workflow_router
+from src.backend.database import engine
+from src.backend.schema_setup import prepare_database
+from src.backend.routes.inventory import router as inventory_router
+from src.backend.routes.integration import router as integration_router
+from src.backend.routes.workflow import router as workflow_router
+from src.utils import FRONTEND_DIST
 
 
 @asynccontextmanager
@@ -37,11 +39,22 @@ app.include_router(integration_router)
 
 
 @app.get("/", include_in_schema=False)
-@app.get("/api", include_in_schema=False)
 def home():
+    if (FRONTEND_DIST / "index.html").is_file():
+        return FileResponse(FRONTEND_DIST / "index.html")
+    return RedirectResponse("/docs")
+
+
+@app.get("/api", include_in_schema=False)
+def api_home():
     return RedirectResponse("/docs")
 
 
 @app.get("/api/healthz", tags=["Demo host"])
 def health():
     return {"status": "ok", "service": "inventory-workflow"}
+
+
+# Register after all API routes so static files cannot take precedence over them.
+if (FRONTEND_DIST / "index.html").is_file():
+    app.mount("/", StaticFiles(directory=FRONTEND_DIST, html=True), name="frontend")
