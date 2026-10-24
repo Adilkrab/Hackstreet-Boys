@@ -1,9 +1,16 @@
+> [!IMPORTANT]
+> ## Submission Documents & Templates
+> Official forms and instructions: [Google Drive folder](https://drive.google.com/drive/folders/1xw7c2aN8N-at8hPEULzkcU76e_FFb0Ef).
+> This README describes the [`submission/template-layout`](https://github.com/Adilkrab/Hackstreet-Boys/tree/submission/template-layout) branch. RunPod is not used; the supplied template labels it required, so organizer confirmation is still needed.
+
+---
+
 # Stock Manager
 
 Inventory management for Malaysian micro and small businesses: connect spreadsheet
 inputs with stock movements, physical counts, owner approvals and an activity trail.
 
-The repository contains the working prototype, verified local run instructions,
+The repository contains the Phase 1 prototype, branch-specific run instructions,
 submission documents and pitch deck. The public Replit deployment is live, while
 the Replit proof-of-use form still requires evidence from the team's account.
 
@@ -23,8 +30,9 @@ the Replit proof-of-use form still requires evidence from the team's account.
 | Resource | Link / status |
 | --- | --- |
 | GitHub Repository | [Adilkrab/Hackstreet-Boys](https://github.com/Adilkrab/Hackstreet-Boys) |
-| Replit Project | Team workspace URL has not been supplied |
-| Live Demo | [Stock Manager on Replit](https://hackstreetboys-stock.replit.app/stock_manager/) - verified 24 October 2026 |
+| Submission Branch | [submission/template-layout](https://github.com/Adilkrab/Hackstreet-Boys/tree/submission/template-layout) |
+| Replit Project | [SME Inventory Workflow Backend](https://replit.com/@lauleong3/SME-Inventory-Workflow-Backend) |
+| Live Demo | [Stock Manager on Replit](https://hackstreetboys-stock.replit.app/stock_manager/) — deployment URL recorded in this branch |
 | RunPod Endpoint | Not applicable - RunPod is not used; no GPU workload. |
 | Slide Deck | [Stock Manager pitch deck](submission/Stock_Manager_Pitch_Submission.pptx) |
 | Demo Video | Public video URL has not been supplied |
@@ -71,7 +79,7 @@ Domain 2 challenge.
 | Spreadsheet processing | Python CSV + openpyxl (XLSX) |
 | AI / Compute | CPU-only rule-based automation; no GPU integration implemented |
 | Hosting / Development | Replit Core for the combined public FastAPI and React deployment |
-| Development assistance | Claude and Codex / ChatGPT; declared in the technical declaration and reviewed by the team |
+| Development assistance | Replit Agent, Claude, and Codex / ChatGPT; team-reviewed assistance, not runtime AI |
 
 ## Project Structure
 
@@ -126,8 +134,11 @@ credentials for the current demo.
 
 ### Option 1 - Run on Replit
 
-1. Open the team's Replit project, or import
-   `https://github.com/Adilkrab/Hackstreet-Boys` into a new Replit app.
+1. Open the [team’s Replit project](https://replit.com/@lauleong3/SME-Inventory-Workflow-Backend), or import
+   `https://github.com/Adilkrab/Hackstreet-Boys` into a new Replit project.
+   These instructions describe the submission branch; for a fresh import, select
+   `submission/template-layout` before running the commands below. The existing
+   hosted project has its own hosting adapters and run configuration.
 2. In the Replit Shell, install dependencies and optionally add the demo data:
 
    ```sh
@@ -152,12 +163,13 @@ ephemeral or multi-instance deployment will preserve this database.
 Clone the repository, then create and activate a virtual environment:
 
 ```sh
-git clone https://github.com/Adilkrab/Hackstreet-Boys.git
+git clone --branch submission/template-layout --single-branch https://github.com/Adilkrab/Hackstreet-Boys.git
 cd Hackstreet-Boys
 python -m venv .venv
 ```
 
-If you already have the repository open, begin from `python -m venv .venv`.
+If you already have a checkout, ensure you are on `submission/template-layout`
+before using these paths. Preserve any uncommitted changes before switching branches.
 
 Windows PowerShell:
 
@@ -220,6 +232,11 @@ for endpoints, input examples, import columns and approval behavior.
 
 ## How We Use Replit (Required)
 
+- **AI-assisted development:** Replit Agent helped with the FastAPI/SQLAlchemy/SQLite
+  workflow, stock-count and approval logic, audit logging, simulated Orbyte sync,
+  testing/debugging, and deployment setup. The technical declaration records
+  moderate use; the exact Agent version was not recorded.
+
 - Development: the repository is configured so Replit installs Python and Node
   dependencies, builds the React frontend, and starts the combined FastAPI app.
 - Hosting: Replit Core hosts the combined application at the public Live Demo link.
@@ -230,11 +247,27 @@ for endpoints, input examples, import columns and approval behavior.
 The proof form still needs genuine screenshots or other required evidence from the
 team's own Replit account before final portal submission.
 
-## How We Use RunPod
+## How We Use RunPod (Template Requirement)
 
-RunPod is not used. The application runs on CPU and has no model training,
-fine-tuning or GPU inference. A RunPod endpoint and proof of use are therefore
-not applicable. Record this in the technical and tools declaration.
+**Not used in Phase 1.** The application runs on CPU and has no model training,
+fine-tuning or GPU inference. There is no RunPod endpoint, handler, API credential
+requirement, or RunPod proof-of-use file in this branch. The proposal and technical
+declaration disclose this scope.
+
+The supplied submission template labels RunPod usage and proof of use as required.
+The team must confirm with the organizers whether a non-GPU Domain 2 submission
+is acceptable; this README does not claim an exemption or completed RunPod use.
+
+### Prototype limitations
+
+- Owner/clerk switching and entered names are not authentication; server-side
+  authorization is still required before real use.
+- SQLite is a local demo database, not a durable multi-instance production setup.
+- Orbyte sync logs a JSON payload but does not deliver it to an external service.
+- Counts are absolute quantities. Negative counts cannot be approved, repeated
+  reviews are rejected, and approvals are blocked when stock changed after counting.
+- The seed script adds missing demo products/scenarios; it does **not** wipe or
+  reset existing stock. Use synthetic data only in the public demo.
 
 ## Challenges & Learnings
 
@@ -254,6 +287,16 @@ not applicable. Record this in the technical and tools declaration.
 - Add advisory loss-pattern detection and bilingual summaries after the rules-based
   workflow has been validated.
 
+### Phase 2 impact targets
+
+The proposal maps the project to **SDG 8**, particularly Targets **8.2** and **8.3**.
+The pilot will measure inventory-record accuracy, audit coverage, and owner review
+workload. After measuring a baseline across 5–20 products, the team targets a 20%
+relative reduction in mismatches after two count cycles, 100% of adjustments with
+an audit entry and named approver or recorded rule, and a test of whether owner
+reviews can be reduced by at least 50%. These are proposed targets, not measured
+results.
+
 ## Team
 
 | Name | Role | GitHub |
@@ -267,21 +310,36 @@ not applicable. Record this in the technical and tools declaration.
 - [x] Confirm team name, domain, SDG track, leader, university and member details.
 - [ ] Add the final public YouTube demo-video URL.
 - [x] Add and verify the public Replit live-demo URL.
-- [ ] Add the team's Replit workspace/project URL if the organizers require it separately.
+- [x] Add the team’s Replit project URL.
 - [x] Add the repository and pitch deck links.
 - [x] Complete the preliminary document and technical/tools declaration.
-- [x] Declare AI assistance, third-party libraries, datasets and other resources accurately.
+- [ ] Refresh the repository technical-declaration PDF from the latest document so it includes Replit Agent.
 - [ ] Complete Replit proof of use with evidence from the team's account.
-- [x] Record "RunPod not used - no GPU workload" in the technical declaration.
+- [x] Record "RunPod not used — no GPU workload" in the technical declaration.
+- [ ] Obtain organizer confirmation on the template’s RunPod usage/proof requirement.
 - [x] Rename the completed preliminary and technical forms with the registered team name.
-- [x] Verify both the documented run steps and the Replit deployment.
+- [ ] Re-run the documented startup, tests, build, and public-demo checks on the final submission revision.
 - [x] Include the final code in the submission branch; the repository is public.
 - [ ] Add the committee's designated GitHub accounts as collaborators.
 - [ ] Check that every submitted link works without a personal login.
-- [x] Check tracked files for common API-key, password and private-key patterns.
+- [ ] Recheck the final tracked files for API keys, passwords and other credentials.
 - [ ] Submit through sdchack.my before the deadline and follow the repository freeze rules.
 
 ## Submission Documents & Templates
+
+| Document | Repository copy | Editable working document |
+| --- | --- | --- |
+| Preliminary proposal | [PDF](submission/SDC2026_HackstreetBoys_Preliminary.pdf) | [Google Doc](https://docs.google.com/document/d/1ArzOEWg5tQZ7Pbs40BXVxdhljdwsezUWkfaPu2azwyU/edit) |
+| Technical & tools declaration | [PDF](submission/SDC2026_HackstreetBoys_TechDeclaration.pdf) | [Google Doc](https://docs.google.com/document/d/1pr-XX2HV8N-jN1RYLqkxZt_GRbRyATnVA6krVtTYaLQ/edit) |
+| Replit proof of use | [PDF — evidence still needed](submission/SDC2026_HackstreetBoys_Replit_POU.pdf) | Complete with genuine account evidence |
+| Pitch deck | [PowerPoint](submission/Stock_Manager_Pitch_Submission.pptx) | — |
+
+Before submission, export the latest working documents to the required PDF names.
+The Google Docs were edited after the uploaded source PDFs: the technical document
+now includes Replit Agent. Also align the demo URL across the documents: this branch
+uses `https://hackstreetboys-stock.replit.app/stock_manager/`, while the technical
+Google Doc still contains the earlier `sme-inventory-workflow-backend` demo address.
+Check viewer permissions on every link supplied to judges.
 
 The completed preliminary and technical declarations use the official forms from
 the [official resources and tutorials](https://drive.google.com/drive/folders/1xw7c2aN8N-at8hPEULzkcU76e_FFb0Ef).
