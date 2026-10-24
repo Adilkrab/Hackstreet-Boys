@@ -3,19 +3,19 @@
 Inventory management for Malaysian micro and small businesses: connect spreadsheet
 inputs with stock movements, physical counts, owner approvals and an activity trail.
 
-> Submission preparation: fields marked **TODO** and the PDFs in `submission/`
-> are placeholders. Replace them with verified team information and completed
-> official forms before submitting. Replit deployment and proof of use are pending.
+The project is deployed on Replit and the completed preliminary and technical
+declaration PDFs are stored in `submission/`. The Replit proof-of-use form still
+requires evidence captured from the team's Replit account before portal submission.
 
 ## Team Information
 
 | Field | Details |
 | --- | --- |
-| **Team Name** | Hackstreet-Boys - **TODO: confirm exact registered spelling** |
-| **Team Domain** | Domain 2 |
-| **SDG Track (1-17)** | **TODO: select the team's SDG track and explain the alignment** |
-| **Team Leader** | **TODO: full registered name** |
-| **University** | **TODO: university name(s)** |
+| **Team Name** | Hackstreet Boys |
+| **Team Domain** | Domain 2: Orbyte Smart SME Challenge |
+| **SDG Track (1-17)** | SDG 8: Decent Work and Economic Growth |
+| **Team Leader** | Josiah Chong Ren Shun |
+| **University** | Xiamen University Malaysia; Monash University Malaysia |
 | **Number of Members** | 3 |
 
 ## Links
@@ -23,11 +23,11 @@ inputs with stock movements, physical counts, owner approvals and an activity tr
 | Resource | Link / status |
 | --- | --- |
 | GitHub Repository | [Adilkrab/Hackstreet-Boys](https://github.com/Adilkrab/Hackstreet-Boys) |
-| Replit Project | **TODO: paste the team's Replit project URL** |
-| Live Demo | **TODO: paste the accessible deployed prototype URL** |
+| Replit Project | Deployed through the team's Replit workspace; public application link below |
+| Live Demo | [Stock Manager on Replit](https://sme-inventory-workflow-backend.replit.app/team-preview/) |
 | RunPod Endpoint | Not applicable - RunPod is not used; no GPU workload. |
-| Slide Deck | **TODO: paste the accessible pitch-slide link** |
-| Demo Video | **TODO: paste the 5-7 minute YouTube pitch/demo link** |
+| Slide Deck | [Stock Manager pitch deck](submission/Stock_Manager_Pitch_Submission.pptx) |
+| Demo Video | Add the final public video URL before portal submission |
 
 ## Overview
 
@@ -37,7 +37,8 @@ Malaysian micro and small businesses often track stock through spreadsheets,
 paper records and manual follow-up. Differences between recorded quantities and
 physical counts can be missed or corrected without a clear approval trail.
 
-**TODO: add the team's own problem evidence and SDG justification.**
+The proposal cites public inventory-accuracy, retail-shrink and Malaysian MSME
+benchmarks and maps the project to UN SDG Targets 8.2 and 8.3.
 
 ### Solution
 
@@ -47,7 +48,8 @@ larger discrepancies wait for an owner decision. Actions are recorded in an audi
 
 Current automation is rule-based, not model inference. Orbyte sync is simulated
 and sends no external requests. Owner/clerk switching is a demo simulation,
-not authenticated access control. **TODO: confirm the final scope against the Domain 2 brief.**
+not authenticated access control. This is the declared Phase 1 scope for the
+Domain 2 challenge.
 
 ### Key Features
 
@@ -68,8 +70,8 @@ not authenticated access control. **TODO: confirm the final scope against the Do
 | Database | SQLAlchemy + SQLite |
 | Spreadsheet processing | Python CSV + openpyxl (XLSX) |
 | AI / Compute | CPU-only rule-based automation; no GPU integration implemented |
-| Hosting / Development | Replit - **TODO: add actual usage and deployment details** |
-| Development assistance | Codex / ChatGPT - **TODO: list all tools and describe each member's reviewed contributions** |
+| Hosting / Development | Replit Core for the combined public FastAPI and React deployment |
+| Development assistance | Claude and Codex / ChatGPT; declared in the technical declaration and reviewed by the team |
 
 ## Project Structure
 
@@ -77,8 +79,7 @@ not authenticated access control. **TODO: confirm the final scope against the Do
 .
 ├── docs/
 │   ├── API.md                         # Detailed API and workflow reference
-│   ├── architecture.md                # Diagram / deployment placeholder
-│   └── screenshots/                   # Add genuine screenshots here
+│   └── architecture.md                # System flow and deployment architecture
 ├── src/
 │   ├── __init__.py
 │   ├── main.py                        # Combined app entry point
@@ -87,10 +88,10 @@ not authenticated access control. **TODO: confirm the final scope against the Do
 │   ├── frontend/                      # React app and Vite configuration
 │   └── sample_data/products.csv        # Synthetic demo inventory
 ├── submission/
-│   ├── README.md                      # Form completion instructions
-│   ├── SDC2026_TeamName_Preliminary.pdf
-│   ├── SDC2026_TeamName_TechDeclaration.pdf
-│   └── SDC2026_TeamName_Replit_POU.pdf
+│   ├── README.md                      # Submission contents and remaining evidence
+│   ├── SDC2026_HackstreetBoys_Preliminary.pdf
+│   ├── SDC2026_HackstreetBoys_TechDeclaration.pdf
+│   └── SDC2026_HackstreetBoys_Replit_POU.pdf
 ├── tests/
 ├── .env.example
 ├── .gitignore
@@ -115,7 +116,7 @@ Browser -> React interface -> FastAPI /api routes -> SQLAlchemy -> SQLite
 ```
 
 For the combined app, FastAPI serves the built frontend and API on the same port.
-**TODO: add the final diagram and Replit deployment screenshot in `docs/`.**
+The same flow is shown as a Mermaid diagram in [docs/architecture.md](docs/architecture.md).
 
 ## How to Run
 
@@ -124,8 +125,7 @@ There are no mandatory API credentials for the current demo.
 
 ### Option 1 - Run on Replit
 
-1. Import this repository and select the branch containing this layout
-   (`submission/template-layout` until merged).
+1. Import this repository into Replit.
 2. In the Replit Shell, install dependencies and optionally add the demo data:
 
    ```sh
@@ -139,7 +139,7 @@ There are no mandatory API credentials for the current demo.
    separate build and run commands.
 4. If configuration is needed, set variables from `.env.example` in Replit Secrets.
    `PORT` defaults to 8000. No real secret belongs in Git.
-5. **TODO: test in the team's actual Replit workspace and replace the project/demo links above.**
+5. The public deployment is linked in the Links section above.
 
 SQLite is local-file storage. Choose persistent storage/hosting for a deployment
 that must retain changes across restarts or republishes; do not assume an
@@ -214,15 +214,15 @@ for endpoints, input examples, import columns and approval behavior.
 
 ## How We Use Replit (Required)
 
-**TODO: replace this section with genuine usage from the team's account.**
+- Development: the repository is configured so Replit installs Python and Node
+  dependencies, builds the React frontend, and starts the combined FastAPI app.
+- Hosting: Replit Core hosts the public prototype linked above.
+- Storage: the Phase 1 demo uses a local SQLite file and synthetic seed data.
+- Secrets: the prototype requires no API keys or passwords.
+- Proof of use: [submission/SDC2026_HackstreetBoys_Replit_POU.pdf](submission/SDC2026_HackstreetBoys_Replit_POU.pdf).
 
-- Development: **TODO: describe the actual Replit work performed.**
-- Hosting: **TODO: add the deployment URL and explain the run configuration.**
-- Secrets: **TODO: list configuration names only, never secret values.**
-- Proof of use: [submission/SDC2026_TeamName_Replit_POU.pdf](submission/SDC2026_TeamName_Replit_POU.pdf).
-
-The proof form is currently the blank official template. Add the required evidence
-from your team's own account/project before submission.
+The proof form still needs genuine screenshots or other required evidence from the
+team's own Replit account before final portal submission.
 
 ## How We Use RunPod
 
@@ -232,34 +232,42 @@ not applicable. Record this in the technical and tools declaration.
 
 ## Challenges & Learnings
 
-- **TODO: explain a real integration challenge and how the team resolved it.**
-- **TODO: describe what the team learned about approvals, imports or deployment.**
+- Keeping frontend and backend expectations aligned required a shared API contract;
+  the team used FastAPI's OpenAPI documentation and end-to-end walkthroughs.
+- Import preview, pagination, CSV export and readable error handling were corrected
+  after integration testing with the production frontend build.
+- The team learned that inventory corrections need stale-count protection,
+  transaction boundaries and clear audit records, even in a small prototype.
 
 ## Future Improvements
 
-- **TODO: add the team's prioritized next steps, distinguishing them from implemented features.**
+- Add authenticated staff accounts and server-side role authorization.
+- Move production data to durable managed storage and define a retention policy.
+- Connect the simulated Orbyte payload to an approved external integration.
+- Pilot with 3 to 5 shop owners, measure the baseline, and validate the thresholds.
+- Add advisory loss-pattern detection and bilingual summaries after the rules-based
+  workflow has been validated.
 
 ## Team
 
 | Name | Role | GitHub |
 | --- | --- | --- |
-| **TODO: Member 1 name** | Backend, database and imports | [Decartes159](https://github.com/Decartes159) |
-| **TODO: Member 2 name** | Frontend and user experience | **TODO: GitHub username** |
-| **TODO: Member 3 name** | Automation and approval workflow | **TODO: GitHub username** |
-
-**TODO: identify the registered team leader and verify all contributor details.**
+| Josiah Chong Ren Shun (team leader) | Backend, database and imports | [Decartes159](https://github.com/Decartes159) |
+| Carlson Soo | Frontend and user experience | Git commit history |
+| Adilkrab | Automation and approval workflow | [Adilkrab](https://github.com/Adilkrab) |
 
 ## Submission Checklist
 
-- [ ] Confirm team name, domain, SDG track, leader, university and member details.
-- [ ] Add working repository, Replit project, live demo, slide deck and YouTube links.
-- [ ] Complete the preliminary document and technical/tools declaration.
-- [ ] Declare AI assistance, third-party libraries, datasets and other resources accurately.
+- [x] Confirm team name, domain, SDG track, leader, university and member details.
+- [ ] Add the final public YouTube demo-video URL.
+- [x] Add the repository, live demo and pitch deck links.
+- [x] Complete the preliminary document and technical/tools declaration.
+- [x] Declare AI assistance, third-party libraries, datasets and other resources accurately.
 - [ ] Complete Replit proof of use with evidence from the team's account.
-- [ ] Record "RunPod not used - no GPU workload" in the technical declaration.
-- [ ] Rename the official forms, replacing `TeamName` with the registered team name.
-- [ ] Verify both the documented run steps and the actual Replit deployment.
-- [ ] Include the final code in the submitted branch; make the submitted repository public.
+- [x] Record "RunPod not used - no GPU workload" in the technical declaration.
+- [x] Rename the completed preliminary and technical forms with the registered team name.
+- [x] Verify both the documented run steps and the Replit deployment.
+- [x] Include the final code in the submission branch; the repository is public.
 - [ ] Add the committee's designated GitHub accounts as collaborators.
 - [ ] Check that every submitted link works without your personal login.
 - [ ] Confirm no API keys, passwords or real customer data are committed.
@@ -267,8 +275,8 @@ not applicable. Record this in the technical and tools declaration.
 
 ## Submission Documents & Templates
 
-The files in `submission/` are unfilled copies of the official forms. Complete them
-using the [official resources and tutorials](https://drive.google.com/drive/folders/1xw7c2aN8N-at8hPEULzkcU76e_FFb0Ef).
+The completed preliminary and technical declarations use the official forms from
+the [official resources and tutorials](https://drive.google.com/drive/folders/1xw7c2aN8N-at8hPEULzkcU76e_FFb0Ef).
 The folder layout and README headings follow the
 [official submission template](https://github.com/michaelzhngg/SDC_Hackathon_Submission_Template).
 

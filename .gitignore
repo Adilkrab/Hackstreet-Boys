@@ -11,3 +11,6 @@ __pycache__/
 *.sqlite3-wal
 node_modules/
 dist/
+.pitch-build/
+pitch-deck/
+tmp/
