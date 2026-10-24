@@ -10,15 +10,15 @@ You need two terminals, both started from the **repository root**.
 Terminal 1, backend:
 
 ```bash
-python -m pip install -r backend/requirements.txt
-python -m backend.seed_demo
-python -m uvicorn backend.main:app --host 0.0.0.0 --port 8000
+python -m pip install -r requirements.txt
+python -m src.backend.seed_demo
+python -m uvicorn src.backend.main:app --host 0.0.0.0 --port 8000
 ```
 
 Terminal 2, frontend:
 
 ```bash
-cd frontend
+cd src/frontend
 npm install
 npm run dev
 ```
@@ -72,6 +72,6 @@ activity log.
 ## Build for deployment
 
 ```bash
-npm run build      # creates frontend/dist
+npm run build      # creates src/frontend/dist
 npm run preview    # serves dist on port 5173, still forwarding /api
 ```

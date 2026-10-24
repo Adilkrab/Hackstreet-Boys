@@ -8,10 +8,10 @@ from fastapi import HTTPException
 from openpyxl import Workbook
 from sqlalchemy import event, select
 
-from backend.core import Product
-from backend.models import AuditLog, StockMovement
-from backend.schemas import StockMovementInput
-from backend.services.inventory import record_stock_movement
+from src.backend.core import Product
+from src.backend.models import AuditLog, StockMovement
+from src.backend.schemas import StockMovementInput
+from src.backend.services.inventory import record_stock_movement
 from tests.test_workflow import setup  # Reuse Member 3's isolated SQLite fixture.
 
 HEADER = "sku,name,system_quantity,unit_price,low_stock_threshold\n"
@@ -266,7 +266,7 @@ def test_concurrent_stock_out_cannot_oversell(setup):
 
 def test_import_database_failure_rolls_back_whole_batch(setup):
     _, sessions, _ = setup
-    from backend.services.import_service import import_inventory
+    from src.backend.services.import_service import import_inventory
     with sessions() as db:
         def fail_import(session, *_):
             if any(isinstance(item, AuditLog) and item.action_type.value == "INVENTORY_IMPORTED" for item in session.new):

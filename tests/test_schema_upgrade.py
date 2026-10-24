@@ -7,9 +7,9 @@ import sys
 from sqlalchemy import create_engine, inspect, select
 from sqlalchemy.orm import Session
 
-from backend.core import Base, Product
-from backend.models import ActionType, AuditLog
-from backend.schema_setup import prepare_database
+from src.backend.core import Base, Product
+from src.backend.models import ActionType, AuditLog
+from src.backend.schema_setup import prepare_database
 
 
 def test_original_sqlite_audit_upgrade_preserves_data_and_is_idempotent(tmp_path):
@@ -50,7 +50,7 @@ def test_seed_command_runs_twice_without_overwriting_stock(tmp_path):
     environment = {**os.environ, "WORKFLOW_DATABASE_URL": f"sqlite:///{database.as_posix()}",
                    "PYTHONIOENCODING": "cp1252"}
     for _ in range(2):
-        result = subprocess.run([sys.executable, "-m", "backend.seed_demo"],
+        result = subprocess.run([sys.executable, "-m", "src.backend.seed_demo"],
                                 cwd=Path(__file__).resolve().parents[1], env=environment,
                                 capture_output=True, timeout=30)
         assert result.returncode == 0, result.stderr.decode("cp1252")
