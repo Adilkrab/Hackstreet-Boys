@@ -25,7 +25,7 @@ inputs with stock movements, physical counts, owner approvals and an activity tr
 | GitHub Repository | [Adilkrab/Hackstreet-Boys](https://github.com/Adilkrab/Hackstreet-Boys) |
 | Replit Project | **TODO: paste the team's Replit project URL** |
 | Live Demo | **TODO: paste the accessible deployed prototype URL** |
-| RunPod Endpoint | **TODO: confirm not applicable (no GPU workload), or paste the actual endpoint URL** |
+| RunPod Endpoint | Not applicable - RunPod is not used; no GPU workload. |
 | Slide Deck | **TODO: paste the accessible pitch-slide link** |
 | Demo Video | **TODO: paste the 5-7 minute YouTube pitch/demo link** |
 
@@ -79,8 +79,6 @@ not authenticated access control. **TODO: confirm the final scope against the Do
 │   ├── API.md                         # Detailed API and workflow reference
 │   ├── architecture.md                # Diagram / deployment placeholder
 │   └── screenshots/                   # Add genuine screenshots here
-├── runpod/
-│   └── README.md                      # Deployment placeholder; not integrated
 ├── src/
 │   ├── __init__.py
 │   ├── main.py                        # Combined app entry point
@@ -92,8 +90,7 @@ not authenticated access control. **TODO: confirm the final scope against the Do
 │   ├── README.md                      # Form completion instructions
 │   ├── SDC2026_TeamName_Preliminary.pdf
 │   ├── SDC2026_TeamName_TechDeclaration.pdf
-│   ├── SDC2026_TeamName_Replit_POU.pdf
-│   └── SDC2026_TeamName_Runpod_POU.pdf
+│   └── SDC2026_TeamName_Replit_POU.pdf
 ├── tests/
 ├── .env.example
 ├── .gitignore
@@ -229,19 +226,9 @@ from your team's own account/project before submission.
 
 ## How We Use RunPod
 
-The current application has no model training, fine-tuning or GPU inference.
-**TODO: confirm whether RunPod is applicable to the final submission.** The
-participant handbook requires RunPod for GPU work; the example template labels
-this section required. If no GPU is used, record that accurately and confirm the
-organizers' final instructions instead of inventing an endpoint or proof.
-
-- Workload: **TODO: actual GPU workload, or "Not used - no GPU workload".**
-- Setup / endpoint: **TODO: actual deployment details, or "Not applicable".**
-- Integration: **TODO: actual request flow, or "Not applicable".**
-- Proof form: [submission/SDC2026_TeamName_Runpod_POU.pdf](submission/SDC2026_TeamName_Runpod_POU.pdf).
-
-`runpod/` is a deployment-resource placeholder. Any future GPU handler source
-should go under `src/`; no template echo handler is presented as a real integration.
+RunPod is not used. The application runs on CPU and has no model training,
+fine-tuning or GPU inference. A RunPod endpoint and proof of use are therefore
+not applicable. Record this in the technical and tools declaration.
 
 ## Challenges & Learnings
 
@@ -269,7 +256,7 @@ should go under `src/`; no template echo handler is presented as a real integrat
 - [ ] Complete the preliminary document and technical/tools declaration.
 - [ ] Declare AI assistance, third-party libraries, datasets and other resources accurately.
 - [ ] Complete Replit proof of use with evidence from the team's account.
-- [ ] Complete RunPod proof if applicable; confirm no-GPU handling with the organizers.
+- [ ] Record "RunPod not used - no GPU workload" in the technical declaration.
 - [ ] Rename the official forms, replacing `TeamName` with the registered team name.
 - [ ] Verify both the documented run steps and the actual Replit deployment.
 - [ ] Include the final code in the submitted branch; make the submitted repository public.
