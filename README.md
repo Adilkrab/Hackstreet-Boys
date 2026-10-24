@@ -24,7 +24,6 @@ the Replit proof-of-use form still requires evidence from the team's account.
 | --- | --- |
 | GitHub Repository | [Adilkrab/Hackstreet-Boys](https://github.com/Adilkrab/Hackstreet-Boys) |
 | Submission Branch | [submission/template-layout](https://github.com/Adilkrab/Hackstreet-Boys/tree/submission/template-layout) |
-| Replit Project | [SME Inventory Workflow Backend](https://replit.com/@lauleong3/SME-Inventory-Workflow-Backend) |
 | Live Demo | [Stock Manager on Replit](https://hackstreetboys-stock.replit.app/stock_manager/) — deployment URL recorded in this branch |
 | RunPod Endpoint | Not applicable - RunPod is not used; no GPU workload. |
 | Slide Deck | [Stock Manager pitch deck](https://github.com/Adilkrab/Hackstreet-Boys/blob/main/submission/SDC2026_HackstreetBoys_Stock_Manager_Pitch.pptx) |
