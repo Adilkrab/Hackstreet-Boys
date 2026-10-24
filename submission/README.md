@@ -9,7 +9,8 @@ This folder contains the Hackstreet Boys submission documents and pitch deck.
   file with the team's completed evidence before the final portal submission
 
 RunPod is not used because the prototype has no GPU workload. The live Replit
-prototype is available at https://sme-inventory-workflow-backend.replit.app/team-preview/.
+prototype is available at https://hackstreetboys-stock.replit.app/stock_manager/
+and was verified on 24 October 2026. The final public demo-video URL is still required.
 
 Official forms and tutorials:
 https://drive.google.com/drive/folders/1xw7c2aN8N-at8hPEULzkcU76e_FFb0Ef

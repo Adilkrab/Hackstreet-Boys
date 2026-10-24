@@ -3,9 +3,9 @@
 Inventory management for Malaysian micro and small businesses: connect spreadsheet
 inputs with stock movements, physical counts, owner approvals and an activity trail.
 
-The project is deployed on Replit and the completed preliminary and technical
-declaration PDFs are stored in `submission/`. The Replit proof-of-use form still
-requires evidence captured from the team's Replit account before portal submission.
+The repository contains the working prototype, verified local run instructions,
+submission documents and pitch deck. The public Replit deployment is live, while
+the Replit proof-of-use form still requires evidence from the team's account.
 
 ## Team Information
 
@@ -23,11 +23,11 @@ requires evidence captured from the team's Replit account before portal submissi
 | Resource | Link / status |
 | --- | --- |
 | GitHub Repository | [Adilkrab/Hackstreet-Boys](https://github.com/Adilkrab/Hackstreet-Boys) |
-| Replit Project | Deployed through the team's Replit workspace; public application link below |
-| Live Demo | [Stock Manager on Replit](https://sme-inventory-workflow-backend.replit.app/team-preview/) |
+| Replit Project | Team workspace URL has not been supplied |
+| Live Demo | [Stock Manager on Replit](https://hackstreetboys-stock.replit.app/stock_manager/) - verified 24 October 2026 |
 | RunPod Endpoint | Not applicable - RunPod is not used; no GPU workload. |
 | Slide Deck | [Stock Manager pitch deck](submission/Stock_Manager_Pitch_Submission.pptx) |
-| Demo Video | Add the final public video URL before portal submission |
+| Demo Video | Public video URL has not been supplied |
 
 ## Overview
 
@@ -91,7 +91,8 @@ Domain 2 challenge.
 │   ├── README.md                      # Submission contents and remaining evidence
 │   ├── SDC2026_HackstreetBoys_Preliminary.pdf
 │   ├── SDC2026_HackstreetBoys_TechDeclaration.pdf
-│   └── SDC2026_HackstreetBoys_Replit_POU.pdf
+│   ├── SDC2026_HackstreetBoys_Replit_POU.pdf
+│   └── Stock_Manager_Pitch_Submission.pptx
 ├── tests/
 ├── .env.example
 ├── .gitignore
@@ -120,12 +121,13 @@ The same flow is shown as a Mermaid diagram in [docs/architecture.md](docs/archi
 
 ## How to Run
 
-Requirements: Python 3.11+ and Node.js 20+. Run commands from the repository root.
-There are no mandatory API credentials for the current demo.
+Requirements: Git, Python 3.11+ and Node.js 20+. There are no mandatory API
+credentials for the current demo.
 
 ### Option 1 - Run on Replit
 
-1. Import this repository into Replit.
+1. Open the team's Replit project, or import
+   `https://github.com/Adilkrab/Hackstreet-Boys` into a new Replit app.
 2. In the Replit Shell, install dependencies and optionally add the demo data:
 
    ```sh
@@ -139,7 +141,7 @@ There are no mandatory API credentials for the current demo.
    separate build and run commands.
 4. If configuration is needed, set variables from `.env.example` in Replit Secrets.
    `PORT` defaults to 8000. No real secret belongs in Git.
-5. The public deployment is linked in the Links section above.
+5. Open the published application using the Live Demo link above.
 
 SQLite is local-file storage. Choose persistent storage/hosting for a deployment
 that must retain changes across restarts or republishes; do not assume an
@@ -147,11 +149,15 @@ ephemeral or multi-instance deployment will preserve this database.
 
 ### Option 2 - Run locally (combined frontend + backend)
 
-Create and activate a virtual environment:
+Clone the repository, then create and activate a virtual environment:
 
 ```sh
+git clone https://github.com/Adilkrab/Hackstreet-Boys.git
+cd Hackstreet-Boys
 python -m venv .venv
 ```
+
+If you already have the repository open, begin from `python -m venv .venv`.
 
 Windows PowerShell:
 
@@ -216,7 +222,7 @@ for endpoints, input examples, import columns and approval behavior.
 
 - Development: the repository is configured so Replit installs Python and Node
   dependencies, builds the React frontend, and starts the combined FastAPI app.
-- Hosting: Replit Core hosts the public prototype linked above.
+- Hosting: Replit Core hosts the combined application at the public Live Demo link.
 - Storage: the Phase 1 demo uses a local SQLite file and synthetic seed data.
 - Secrets: the prototype requires no API keys or passwords.
 - Proof of use: [submission/SDC2026_HackstreetBoys_Replit_POU.pdf](submission/SDC2026_HackstreetBoys_Replit_POU.pdf).
@@ -253,14 +259,16 @@ not applicable. Record this in the technical and tools declaration.
 | Name | Role | GitHub |
 | --- | --- | --- |
 | Josiah Chong Ren Shun (team leader) | Backend, database and imports | [Decartes159](https://github.com/Decartes159) |
-| Carlson Soo | Frontend and user experience | Git commit history |
+| Carlson Soo | Frontend and user experience | GitHub username not supplied |
 | Adilkrab | Automation and approval workflow | [Adilkrab](https://github.com/Adilkrab) |
 
 ## Submission Checklist
 
 - [x] Confirm team name, domain, SDG track, leader, university and member details.
 - [ ] Add the final public YouTube demo-video URL.
-- [x] Add the repository, live demo and pitch deck links.
+- [x] Add and verify the public Replit live-demo URL.
+- [ ] Add the team's Replit workspace/project URL if the organizers require it separately.
+- [x] Add the repository and pitch deck links.
 - [x] Complete the preliminary document and technical/tools declaration.
 - [x] Declare AI assistance, third-party libraries, datasets and other resources accurately.
 - [ ] Complete Replit proof of use with evidence from the team's account.
@@ -269,8 +277,8 @@ not applicable. Record this in the technical and tools declaration.
 - [x] Verify both the documented run steps and the Replit deployment.
 - [x] Include the final code in the submission branch; the repository is public.
 - [ ] Add the committee's designated GitHub accounts as collaborators.
-- [ ] Check that every submitted link works without your personal login.
-- [ ] Confirm no API keys, passwords or real customer data are committed.
+- [ ] Check that every submitted link works without a personal login.
+- [x] Check tracked files for common API-key, password and private-key patterns.
 - [ ] Submit through sdchack.my before the deadline and follow the repository freeze rules.
 
 ## Submission Documents & Templates
